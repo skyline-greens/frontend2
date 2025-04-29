@@ -1,78 +1,55 @@
 'use client';
-import { Badge } from '@/components/ui/badge';
 import { DataTableColumnHeader } from '@/components/ui/table/data-table-column-header';
-import { Product } from '@/constants/data';
 import { Column, ColumnDef } from '@tanstack/react-table';
-import { CheckCircle2, Text, XCircle } from 'lucide-react';
-import Image from 'next/image';
 import { CellAction } from './cell-action';
-import { CATEGORY_OPTIONS } from './options';
 
-export const columns: ColumnDef<Product>[] = [
+// Define Session type
+interface Session {
+  id: string;
+  startDate: string;
+  endDate: string;
+  plantType: string;
+}
+
+export const columns: ColumnDef<Session>[] = [
   {
-    accessorKey: 'photo_url',
-    header: 'IMAGE',
-    cell: ({ row }) => {
-      return (
-        <div className='relative aspect-square'>
-          <Image
-            src={row.getValue('photo_url')}
-            alt={row.getValue('name')}
-            fill
-            className='rounded-lg'
-          />
-        </div>
-      );
-    }
-  },
-  {
-    id: 'name',
-    accessorKey: 'name',
-    header: ({ column }: { column: Column<Product, unknown> }) => (
-      <DataTableColumnHeader column={column} title='Name' />
+    id: 'session id',
+    accessorKey: 'id',
+    header: ({ column }: { column: Column<Session, unknown> }) => (
+      <DataTableColumnHeader column={column} title='Session ID' />
     ),
-    cell: ({ cell }) => <div>{cell.getValue<Product['name']>()}</div>,
-    meta: {
-      label: 'Name',
-      placeholder: 'Search products...',
-      variant: 'text',
-      icon: Text
-    },
-    enableColumnFilter: true
+    cell: ({ cell }) => <div>{cell.getValue<Session['id']>()}</div>
   },
   {
-    id: 'category',
-    accessorKey: 'category',
-    header: ({ column }: { column: Column<Product, unknown> }) => (
-      <DataTableColumnHeader column={column} title='Category' />
+    id: 'start date',
+    accessorKey: 'startDate',
+    header: ({ column }: { column: Column<Session, unknown> }) => (
+      <DataTableColumnHeader column={column} title='Start Date' />
     ),
     cell: ({ cell }) => {
-      const status = cell.getValue<Product['category']>();
-      const Icon = status === 'active' ? CheckCircle2 : XCircle;
-
-      return (
-        <Badge variant='outline' className='capitalize'>
-          <Icon />
-          {status}
-        </Badge>
-      );
-    },
-    enableColumnFilter: true,
-    meta: {
-      label: 'categories',
-      variant: 'multiSelect',
-      options: CATEGORY_OPTIONS
+      const date = new Date(cell.getValue<Session['startDate']>());
+      return <div>{date.toLocaleDateString()}</div>;
     }
   },
   {
-    accessorKey: 'price',
-    header: 'PRICE'
+    id: 'end date',
+    accessorKey: 'endDate',
+    header: ({ column }: { column: Column<Session, unknown> }) => (
+      <DataTableColumnHeader column={column} title='End Date' />
+    ),
+    cell: ({ cell }) => {
+      const date = new Date(cell.getValue<Session['endDate']>());
+      return <div>{date.toLocaleDateString()}</div>;
+    }
   },
   {
-    accessorKey: 'description',
-    header: 'DESCRIPTION'
+    id: 'plant type',
+    accessorKey: 'plantType',
+    header: ({ column }: { column: Column<Session, unknown> }) => (
+      <DataTableColumnHeader column={column} title='Plant Type' />
+    ),
+    cell: ({ cell }) => <div>{cell.getValue<Session['plantType']>()}</div>
   },
-
   {
     id: 'actions',
     cell: ({ row }) => <CellAction data={row.original} />

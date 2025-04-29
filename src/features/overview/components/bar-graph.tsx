@@ -1,8 +1,16 @@
 'use client';
 
+import { TimeRangeSelector } from '@/features/overview/TimeRangeSelector';
 import * as React from 'react';
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
-
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
+import { useMemo, useState } from 'react';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@/components/ui/select';
 import {
   Card,
   CardContent,
@@ -17,130 +25,84 @@ import {
   ChartTooltipContent
 } from '@/components/ui/chart';
 
-export const description = 'An interactive bar chart';
-
-const chartData = [
-  { date: '2024-04-01', desktop: 222, mobile: 150 },
-  { date: '2024-04-02', desktop: 97, mobile: 180 },
-  { date: '2024-04-03', desktop: 167, mobile: 120 },
-  { date: '2024-04-04', desktop: 242, mobile: 260 },
-  { date: '2024-04-05', desktop: 373, mobile: 290 },
-  { date: '2024-04-06', desktop: 301, mobile: 340 },
-  { date: '2024-04-07', desktop: 245, mobile: 180 },
-  { date: '2024-04-08', desktop: 409, mobile: 320 },
-  { date: '2024-04-09', desktop: 59, mobile: 110 },
-  { date: '2024-04-10', desktop: 261, mobile: 190 },
-  { date: '2024-04-11', desktop: 327, mobile: 350 },
-  { date: '2024-04-12', desktop: 292, mobile: 210 },
-  { date: '2024-04-13', desktop: 342, mobile: 380 },
-  { date: '2024-04-14', desktop: 137, mobile: 220 },
-  { date: '2024-04-15', desktop: 120, mobile: 170 },
-  { date: '2024-04-16', desktop: 138, mobile: 190 },
-  { date: '2024-04-17', desktop: 446, mobile: 360 },
-  { date: '2024-04-18', desktop: 364, mobile: 410 },
-  { date: '2024-04-19', desktop: 243, mobile: 180 },
-  { date: '2024-04-20', desktop: 89, mobile: 150 },
-  { date: '2024-04-21', desktop: 137, mobile: 200 },
-  { date: '2024-04-22', desktop: 224, mobile: 170 },
-  { date: '2024-04-23', desktop: 138, mobile: 230 },
-  { date: '2024-04-24', desktop: 387, mobile: 290 },
-  { date: '2024-04-25', desktop: 215, mobile: 250 },
-  { date: '2024-04-26', desktop: 75, mobile: 130 },
-  { date: '2024-04-27', desktop: 383, mobile: 420 },
-  { date: '2024-04-28', desktop: 122, mobile: 180 },
-  { date: '2024-04-29', desktop: 315, mobile: 240 },
-  { date: '2024-04-30', desktop: 454, mobile: 380 },
-  { date: '2024-05-01', desktop: 165, mobile: 220 },
-  { date: '2024-05-02', desktop: 293, mobile: 310 },
-  { date: '2024-05-03', desktop: 247, mobile: 190 },
-  { date: '2024-05-04', desktop: 385, mobile: 420 },
-  { date: '2024-05-05', desktop: 481, mobile: 390 },
-  { date: '2024-05-06', desktop: 498, mobile: 520 },
-  { date: '2024-05-07', desktop: 388, mobile: 300 },
-  { date: '2024-05-08', desktop: 149, mobile: 210 },
-  { date: '2024-05-09', desktop: 227, mobile: 180 },
-  { date: '2024-05-10', desktop: 293, mobile: 330 },
-  { date: '2024-05-11', desktop: 335, mobile: 270 },
-  { date: '2024-05-12', desktop: 197, mobile: 240 },
-  { date: '2024-05-13', desktop: 197, mobile: 160 },
-  { date: '2024-05-14', desktop: 448, mobile: 490 },
-  { date: '2024-05-15', desktop: 473, mobile: 380 },
-  { date: '2024-05-16', desktop: 338, mobile: 400 },
-  { date: '2024-05-17', desktop: 499, mobile: 420 },
-  { date: '2024-05-18', desktop: 315, mobile: 350 },
-  { date: '2024-05-19', desktop: 235, mobile: 180 },
-  { date: '2024-05-20', desktop: 177, mobile: 230 },
-  { date: '2024-05-21', desktop: 82, mobile: 140 },
-  { date: '2024-05-22', desktop: 81, mobile: 120 },
-  { date: '2024-05-23', desktop: 252, mobile: 290 },
-  { date: '2024-05-24', desktop: 294, mobile: 220 },
-  { date: '2024-05-25', desktop: 201, mobile: 250 },
-  { date: '2024-05-26', desktop: 213, mobile: 170 },
-  { date: '2024-05-27', desktop: 420, mobile: 460 },
-  { date: '2024-05-28', desktop: 233, mobile: 190 },
-  { date: '2024-05-29', desktop: 78, mobile: 130 },
-  { date: '2024-05-30', desktop: 340, mobile: 280 },
-  { date: '2024-05-31', desktop: 178, mobile: 230 },
-  { date: '2024-06-01', desktop: 178, mobile: 200 },
-  { date: '2024-06-02', desktop: 470, mobile: 410 },
-  { date: '2024-06-03', desktop: 103, mobile: 160 },
-  { date: '2024-06-04', desktop: 439, mobile: 380 },
-  { date: '2024-06-05', desktop: 88, mobile: 140 },
-  { date: '2024-06-06', desktop: 294, mobile: 250 },
-  { date: '2024-06-07', desktop: 323, mobile: 370 },
-  { date: '2024-06-08', desktop: 385, mobile: 320 },
-  { date: '2024-06-09', desktop: 438, mobile: 480 },
-  { date: '2024-06-10', desktop: 155, mobile: 200 },
-  { date: '2024-06-11', desktop: 92, mobile: 150 },
-  { date: '2024-06-12', desktop: 492, mobile: 420 },
-  { date: '2024-06-13', desktop: 81, mobile: 130 },
-  { date: '2024-06-14', desktop: 426, mobile: 380 },
-  { date: '2024-06-15', desktop: 307, mobile: 350 },
-  { date: '2024-06-16', desktop: 371, mobile: 310 },
-  { date: '2024-06-17', desktop: 475, mobile: 520 },
-  { date: '2024-06-18', desktop: 107, mobile: 170 },
-  { date: '2024-06-19', desktop: 341, mobile: 290 },
-  { date: '2024-06-20', desktop: 408, mobile: 450 },
-  { date: '2024-06-21', desktop: 169, mobile: 210 },
-  { date: '2024-06-22', desktop: 317, mobile: 270 },
-  { date: '2024-06-23', desktop: 480, mobile: 530 },
-  { date: '2024-06-24', desktop: 132, mobile: 180 },
-  { date: '2024-06-25', desktop: 141, mobile: 190 },
-  { date: '2024-06-26', desktop: 434, mobile: 380 },
-  { date: '2024-06-27', desktop: 448, mobile: 490 },
-  { date: '2024-06-28', desktop: 149, mobile: 200 },
-  { date: '2024-06-29', desktop: 103, mobile: 160 },
-  { date: '2024-06-30', desktop: 446, mobile: 400 }
-];
+export const description = 'An interactive line chart';
 
 const chartConfig = {
-  views: {
-    label: 'Page Views'
+  temperature: {
+    label: 'Temperature',
+    color: '#15803d'
   },
-  desktop: {
-    label: 'Desktop',
-    color: 'var(--primary)'
-  },
-  mobile: {
-    label: 'Mobile',
-    color: 'var(--primary)'
-  },
-  error: {
-    label: 'Error',
-    color: 'var(--primary)'
+  humidity: {
+    label: 'Humidity',
+    color: '#15803d'
   }
 } satisfies ChartConfig;
 
-export function BarGraph() {
+export function LineGraph() {
+  const [timeRange, setTimeRange] = useState<'day' | 'month' | 'year'>('month');
+  const [selectedYear, setSelectedYear] = useState<number>(2024);
+  const [selectedMonth, setSelectedMonth] = useState<number>(4);
+  const [selectedDay, setSelectedDay] = useState<number>(1);
   const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>('desktop');
+    React.useState<keyof typeof chartConfig>('temperature');
+
+  const chartData = useMemo(() => {
+    const data = [];
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    const currentDay = now.getDate();
+
+    if (timeRange === 'year') {
+      for (let month = 1; month <= 12; month++) {
+        const temperature = Math.floor(Math.random() * 40) + 10;
+        const humidity = Math.floor(Math.random() * 70) + 30;
+        data.push({
+          date: `${selectedYear}-${month.toString().padStart(2, '0')}-01`,
+          temperature,
+          humidity
+        });
+      }
+    } else if (timeRange === 'month') {
+      const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const temperature = Math.floor(Math.random() * 40) + 10;
+        const humidity = Math.floor(Math.random() * 70) + 30;
+        data.push({
+          date: `${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
+          temperature,
+          humidity
+        });
+      }
+    } else {
+      for (let hour = 0; hour < 24; hour++) {
+        const temperature = Math.floor(Math.random() * 15) + 20;
+        const humidity = Math.floor(Math.random() * 30) + 50;
+        data.push({
+          date: `${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-${selectedDay.toString().padStart(2, '0')}T${hour.toString().padStart(2, '0')}:00:00`,
+          temperature,
+          humidity
+        });
+      }
+    }
+    return data;
+  }, [timeRange, selectedYear, selectedMonth, selectedDay]);
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from(
+    { length: currentYear - 2020 + 1 },
+    (_, i) => 2020 + i
+  );
+
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
   const total = React.useMemo(
     () => ({
-      desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
-      mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0)
+      Temperature: chartData.reduce((acc, curr) => acc + curr.temperature, 0),
+      Humidity: chartData.reduce((acc, curr) => acc + curr.humidity, 0)
     }),
-    []
+    [chartData]
   );
 
   const [isClient, setIsClient] = React.useState(false);
@@ -149,113 +111,207 @@ export function BarGraph() {
     setIsClient(true);
   }, []);
 
-  React.useEffect(() => {
-    if (activeChart === 'error') {
-      throw new Error('Mocking Error');
-    }
-  }, [activeChart]);
-
   if (!isClient) {
     return null;
   }
 
   return (
-    <Card className='@container/card !pt-3'>
-      <CardHeader className='flex flex-col items-stretch space-y-0 border-b !p-0 sm:flex-row'>
-        <div className='flex flex-1 flex-col justify-center gap-1 px-6 !py-0'>
-          <CardTitle>Bar Chart - Interactive</CardTitle>
-          <CardDescription>
-            <span className='hidden @[540px]/card:block'>
-              Total for the last 3 months
-            </span>
-            <span className='@[540px]/card:hidden'>Last 3 months</span>
+    <Card className='@container/card rounded-xl bg-white shadow-lg'>
+      <CardHeader className='flex flex-col items-start justify-between border-b border-gray-100 p-6 sm:flex-row sm:items-center'>
+        <div className='flex flex-col gap-2'>
+          <CardTitle className='text-2xl font-bold text-gray-800'>
+            Temperature & Humidity Trends
+          </CardTitle>
+          <CardDescription className='text-gray-500'>
+            Analyze environmental data over time
           </CardDescription>
         </div>
-        <div className='flex'>
-          {['desktop', 'mobile', 'error'].map((key) => {
+      </CardHeader>
+      <CardContent className='p-6'>
+        <div className='flex flex-col gap-2 pb-6 sm:flex-row sm:items-center sm:justify-between'>
+          <TimeRangeSelector
+            value={timeRange}
+            onChange={setTimeRange}
+            className='w-full sm:w-auto'
+          />
+          <div className='grid grid-cols-2 gap-2 sm:flex sm:gap-2'>
+            <Select
+              value={selectedYear.toString()}
+              onValueChange={(val) => setSelectedYear(Number(val))}
+            >
+              <SelectTrigger className='w-full'>
+                <SelectValue placeholder='Year' />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {timeRange !== 'year' && (
+              <Select
+                value={selectedMonth.toString()}
+                onValueChange={(val) => setSelectedMonth(Number(val))}
+              >
+                <SelectTrigger className='w-full'>
+                  <SelectValue placeholder='Month' />
+                </SelectTrigger>
+                <SelectContent>
+                  {months.map((month) => (
+                    <SelectItem key={month} value={month.toString()}>
+                      {new Date(2024, month - 1).toLocaleString('default', {
+                        month: 'long'
+                      })}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {timeRange === 'day' && (
+              <Select
+                value={selectedDay.toString()}
+                onValueChange={(val) => setSelectedDay(Number(val))}
+              >
+                <SelectTrigger className='w-full'>
+                  <SelectValue placeholder='Day' />
+                </SelectTrigger>
+                <SelectContent>
+                  {days.map((day) => (
+                    <SelectItem key={day} value={day.toString()}>
+                      {day}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+        </div>
+        <div className='mb-6 flex gap-4'>
+          {['temperature', 'humidity'].map((key) => {
             const chart = key as keyof typeof chartConfig;
             if (!chart || total[key as keyof typeof total] === 0) return null;
             return (
               <button
                 key={chart}
                 data-active={activeChart === chart}
-                className='data-[active=true]:bg-primary/5 hover:bg-primary/5 relative flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left transition-colors duration-200 even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6'
+                className={`flex-1 rounded-lg p-4 text-left transition-all duration-200 ${
+                  activeChart === chart
+                    ? 'border border-green-200 bg-green-50'
+                    : 'bg-gray-50 hover:bg-gray-100'
+                }`}
                 onClick={() => setActiveChart(chart)}
               >
-                <span className='text-muted-foreground text-xs'>
+                <span className='text-sm text-gray-500 capitalize'>
                   {chartConfig[chart].label}
                 </span>
-                <span className='text-lg leading-none font-bold sm:text-3xl'>
+                <span className='text-2xl font-bold text-gray-800'>
                   {total[key as keyof typeof total]?.toLocaleString()}
                 </span>
               </button>
             );
           })}
         </div>
-      </CardHeader>
-      <CardContent className='px-2 pt-4 sm:px-6 sm:pt-6'>
-        <ChartContainer
-          config={chartConfig}
-          className='aspect-auto h-[250px] w-full'
-        >
-          <BarChart
+        <ChartContainer config={chartConfig} className='h-[300px] w-full'>
+          <LineChart
             data={chartData}
             margin={{
               left: 12,
-              right: 12
+              right: 12,
+              top: 12,
+              bottom: 12
             }}
           >
             <defs>
-              <linearGradient id='fillBar' x1='0' y1='0' x2='0' y2='1'>
-                <stop
-                  offset='0%'
-                  stopColor='var(--primary)'
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset='100%'
-                  stopColor='var(--primary)'
-                  stopOpacity={0.2}
-                />
+              <linearGradient id='fillLine' x1='0' y1='0' x2='0' y2='1'>
+                <stop offset='0%' stopColor='#15803d' stopOpacity={0.8} />
+                <stop offset='100%' stopColor='#15803d' stopOpacity={0.2} />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} />
+            <CartesianGrid
+              vertical={false}
+              stroke='#e5e7eb'
+              strokeDasharray='3 3'
+            />
             <XAxis
               dataKey='date'
               tickLine={false}
-              axisLine={false}
+              axisLine={{ stroke: '#d1d5db' }}
               tickMargin={8}
               minTickGap={32}
+              tick={{ fill: '#6b7280' }}
               tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric'
-                });
+                if (timeRange === 'day') {
+                  const date = new Date(value);
+                  return date.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    hour12: true
+                  });
+                } else {
+                  const date = new Date(value);
+                  return date.toLocaleDateString('en-US', {
+                    month: timeRange === 'year' ? 'short' : undefined,
+                    day: 'numeric'
+                  });
+                }
               }}
             />
+            <YAxis
+              tickLine={false}
+              axisLine={{ stroke: '#d1d5db' }}
+              tick={{ fill: '#6b7280' }}
+              tickFormatter={(value) =>
+                activeChart === 'temperature' ? `${value}°C` : `${value}%`
+              }
+            />
             <ChartTooltip
-              cursor={{ fill: 'var(--primary)', opacity: 0.1 }}
+              cursor={{ stroke: '#15803d', strokeOpacity: 0.1 }}
               content={
                 <ChartTooltipContent
-                  className='w-[150px]'
+                  className='w-[180px] rounded-lg border border-gray-200 bg-white p-3 shadow-md'
                   nameKey='views'
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    });
+                    const date = new Date(value);
+                    if (timeRange === 'day') {
+                      return date.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        hour12: true,
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      });
+                    } else {
+                      return date.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      });
+                    }
                   }}
+                  formatter={(value) =>
+                    activeChart === 'temperature' ? `${value}°C` : `${value}%`
+                  }
                 />
               }
             />
-            <Bar
+            <Line
+              type='monotone'
               dataKey={activeChart}
-              fill='url(#fillBar)'
-              radius={[4, 4, 0, 0]}
+              stroke='#15803d'
+              strokeWidth={2}
+              dot={false}
+              activeDot={{
+                r: 6,
+                fill: '#15803d',
+                stroke: '#fff',
+                strokeWidth: 2
+              }}
             />
-          </BarChart>
+          </LineChart>
         </ChartContainer>
       </CardContent>
     </Card>

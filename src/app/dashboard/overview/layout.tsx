@@ -10,7 +10,14 @@ import {
 } from '@/components/ui/card';
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
 import React from 'react';
-
+import Commands from '@/features/overview/components/commands';
+import {
+  ThermometerIcon,
+  Calendar1Icon,
+  DropletIcon,
+  CloudIcon
+} from 'lucide-react';
+import CO2AreaChart from '@/features/overview/components/area-graph';
 export default function OverViewLayout({
   sales,
   pie_stats,
@@ -24,112 +31,108 @@ export default function OverViewLayout({
 }) {
   return (
     <PageContainer>
-      <div className='flex flex-1 flex-col space-y-2'>
+      <div className='flex flex-1 flex-col pb-6'>
         <div className='flex items-center justify-between space-y-2'>
-          <h2 className='text-2xl font-bold tracking-tight'>
+          <h2 className='mb-4 text-2xl font-bold tracking-tight'>
             Hi, Welcome back 👋
           </h2>
         </div>
 
-        <div className='*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4'>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Total Revenue</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                $1,250.00
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <IconTrendingUp />
-                  +12.5%
-                </Badge>
-              </CardAction>
+        <div className='*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card mb-8 grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4'>
+          <Card className='@container/card h-32'>
+            <CardHeader className='flex h-36 items-center justify-center'>
+              <div className='mr-2 flex h-14 w-14 items-center justify-center rounded-lg border border-green-500 bg-green-100'>
+                <ThermometerIcon className='h-8 w-8 text-green-700' />
+              </div>
+
+              <div className='flex flex-1 flex-col gap-y-1'>
+                <CardDescription className='text-xs'>
+                  {' '}
+                  temperature
+                </CardDescription>
+                <CardTitle className='text-xl font-bold tabular-nums @[250px]/card:text-2xl'>
+                  23°C
+                </CardTitle>
+                <CardAction className='mt-2'>
+                  <Badge variant='outline' className='flex items-center'>
+                    <IconTrendingUp className='h-4 w-4' />
+                    +4°C
+                  </Badge>
+                </CardAction>
+              </div>
             </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Trending up this month <IconTrendingUp className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>
-                Visitors for the last 6 months
-              </div>
-            </CardFooter>
           </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>New Customers</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                1,234
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <IconTrendingDown />
-                  -20%
-                </Badge>
-              </CardAction>
+
+          <Card className='@container/card h-32'>
+            <CardHeader className='flex h-36 items-center justify-center gap-4'>
+              <div className='mr-2 flex h-14 w-14 items-center justify-center rounded-lg border border-green-500 bg-green-100'>
+                <DropletIcon className='h-8 w-8 text-green-700' />
+              </div>
+
+              <div className='flex flex-1 flex-col gap-y-1'>
+                <CardDescription className='text-xs'>
+                  {' '}
+                  humidity{' '}
+                </CardDescription>
+                <CardTitle className='text-xl font-bold tabular-nums @[250px]/card:text-2xl'>
+                  19%
+                </CardTitle>
+                <CardAction className='mt-2'>
+                  <Badge variant='outline' className='flex items-center gap-1'>
+                    <IconTrendingUp className='h-4 w-4' />
+                    +2%
+                  </Badge>
+                </CardAction>
+              </div>
             </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Down 20% this period <IconTrendingDown className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>
-                Acquisition needs attention
-              </div>
-            </CardFooter>
           </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Active Accounts</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                45,678
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <IconTrendingUp />
-                  +12.5%
-                </Badge>
-              </CardAction>
+
+          <Card className='@container/card h-32'>
+            <CardHeader className='flex h-36 items-center justify-center gap-2'>
+              <div className='mr-2 flex h-14 w-14 items-center justify-center rounded-lg border border-green-500 bg-green-100'>
+                <CloudIcon className='h-8 w-8 text-green-700' />
+              </div>
+
+              <div className='flex flex-1 flex-col gap-y-1'>
+                <CardDescription className='text-xs'>
+                  {' '}
+                  CO2 level
+                </CardDescription>
+                <CardTitle className='text-xl font-bold tabular-nums @[250px]/card:text-2xl'>
+                  450 ppm
+                </CardTitle>
+                <CardAction className='mt-2'>
+                  <Badge variant='outline' className='flex items-center gap-1'>
+                    <IconTrendingUp className='h-4 w-4' />
+                    +45 ppm
+                  </Badge>
+                </CardAction>
+              </div>
             </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Strong user retention <IconTrendingUp className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>
-                Engagement exceed targets
-              </div>
-            </CardFooter>
           </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Growth Rate</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                4.5%
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <IconTrendingUp />
-                  +4.5%
-                </Badge>
-              </CardAction>
+          <Card className='@container/card h-32'>
+            <CardHeader className='flex h-36 items-center justify-center gap-4'>
+              <div className='mr-2 flex h-14 w-14 items-center justify-center rounded-lg border border-green-500 bg-green-100'>
+                <Calendar1Icon className='h-7 w-7 text-green-700' />
+              </div>
+
+              <div className='flex flex-1 flex-col gap-y-1'>
+                <CardDescription className='text-xs'> session</CardDescription>
+                <CardTitle className='text-lg font-bold tabular-nums @[250px]/card:text-2xl'>
+                  24<div className='text-sm font-normal'>days left</div>
+                </CardTitle>
+              </div>
             </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Steady performance increase{' '}
-                <IconTrendingUp className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>
-                Meets growth projections
-              </div>
-            </CardFooter>
           </Card>
         </div>
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7'>
-          <div className='col-span-4'>{bar_stats}</div>
-          <div className='col-span-4 md:col-span-3'>
-            {/* sales arallel routes */}
-            {sales}
+          <div className='col-span-10'>{bar_stats}</div>
+          <div className='col-span-10 mt-4 rounded-xl bg-[var(--card)] shadow-xs'>
+            <Commands />
           </div>
-          <div className='col-span-4'>{area_stats}</div>
-          <div className='col-span-4 md:col-span-3'>{pie_stats}</div>
+          <div className='col-span-10 mt-4 rounded-xl bg-[var(--card)] shadow-xs'>
+            <CO2AreaChart />
+          </div>
         </div>
       </div>
     </PageContainer>

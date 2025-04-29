@@ -22,44 +22,30 @@ export const navItems: NavItem[] = [
     items: [] // Empty array as there are no child items for Dashboard
   },
   {
-    title: 'Product',
-    url: '/dashboard/product',
-    icon: 'product',
-    shortcut: ['p', 'p'],
+    title: 'Sessions',
+    url: '/dashboard/session',
+    icon: 'sessions',
+    shortcut: ['s', 's'],
     isActive: false,
     items: [] // No child items
   },
   {
-    title: 'Account',
-    url: '#', // Placeholder as there is no direct link for the parent
-    icon: 'billing',
-    isActive: true,
-
-    items: [
-      {
-        title: 'Profile',
-        url: '/dashboard/profile',
-        icon: 'userPen',
-        shortcut: ['m', 'm']
-      },
-      {
-        title: 'Login',
-        shortcut: ['l', 'l'],
-        url: '/',
-        icon: 'login'
-      }
-    ]
+    title: 'Managers',
+    url: '/dashboard/managers',
+    icon: 'managers',
+    shortcut: ['m', 'm'],
+    isActive: false,
+    items: [] // No child items
   },
   {
-    title: 'Kanban',
-    url: '/dashboard/kanban',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
+    title: 'Resources',
+    url: '/dashboard/resources',
+    icon: 'resources',
+    shortcut: ['r', 'r'],
     isActive: false,
     items: [] // No child items
   }
 ];
-
 export interface SaleUser {
   id: number;
   name: string;

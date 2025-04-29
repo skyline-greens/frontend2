@@ -41,6 +41,7 @@ import {
   IconPhotoUp,
   IconUserCircle
 } from '@tabler/icons-react';
+import Image from 'next/image';
 import { SignOutButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -53,12 +54,6 @@ export const company = {
   plan: 'Enterprise'
 };
 
-const tenants = [
-  { id: '1', name: 'Acme Inc' },
-  { id: '2', name: 'Beta Corp' },
-  { id: '3', name: 'Gamma Ltd' }
-];
-
 export default function AppSidebar() {
   const pathname = usePathname();
   const { isOpen } = useMediaQuery();
@@ -68,25 +63,30 @@ export default function AppSidebar() {
     // Tenant switching functionality would be implemented here
   };
 
-  const activeTenant = tenants[0];
-
   React.useEffect(() => {
     // Side effects based on sidebar state changes
   }, [isOpen]);
 
   return (
     <Sidebar collapsible='icon'>
-      <SidebarHeader>
-        <OrgSwitcher
-          tenants={tenants}
-          defaultTenant={activeTenant}
-          onTenantSwitch={handleSwitchTenant}
-        />
+      <SidebarHeader className='flex justify-center'>
+        <Link
+          href='/dashboard'
+          className='data-[collapsed=false]:flex data-[collapsed=false]:justify-center data-[collapsed=true]:hidden'
+        >
+          <Image
+            src='/images/logo.png'
+            alt='Company Logo'
+            width={60}
+            height={60}
+            className='my-2'
+            priority
+          />
+        </Link>
       </SidebarHeader>
       <SidebarContent className='overflow-x-hidden'>
         <SidebarGroup>
-          <SidebarGroupLabel>Overview</SidebarGroupLabel>
-          <SidebarMenu>
+          <SidebarMenu className='space-y-4'>
             {navItems.map((item) => {
               const Icon = item.icon ? Icons[item.icon] : Icons.logo;
               return item?.items && item?.items?.length > 0 ? (
@@ -101,10 +101,23 @@ export default function AppSidebar() {
                       <SidebarMenuButton
                         tooltip={item.title}
                         isActive={pathname === item.url}
+                        className={`py-2 text-lg hover:bg-green-100 ${
+                          pathname === item.url ? 'bg-green-700 text-white' : ''
+                        }`} // Hover and active styles
                       >
-                        {item.icon && <Icon />}
+                        {item.icon && (
+                          <Icon
+                            className={`mr-2 h-6 w-6 ${
+                              pathname === item.url ? 'text-white' : ''
+                            }`} // Icon size and active color
+                          />
+                        )}
                         <span>{item.title}</span>
-                        <IconChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+                        <IconChevronRight
+                          className={`ml-auto h-5 w-5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 ${
+                            pathname === item.url ? 'text-white' : ''
+                          }`} // Chevron size and active color
+                        />
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
@@ -114,6 +127,11 @@ export default function AppSidebar() {
                             <SidebarMenuSubButton
                               asChild
                               isActive={pathname === subItem.url}
+                              className={`text-base hover:bg-green-100 ${
+                                pathname === subItem.url
+                                  ? 'bg-green-700 text-white'
+                                  : ''
+                              }`} // Hover and active styles for sub-items
                             >
                               <Link href={subItem.url}>
                                 <span>{subItem.title}</span>
@@ -131,9 +149,14 @@ export default function AppSidebar() {
                     asChild
                     tooltip={item.title}
                     isActive={pathname === item.url}
+                    className={`py-2 text-lg hover:bg-green-100 ${
+                      pathname === item.url ? 'bg-green-700 text-white' : ''
+                    }`} // Hover and active styles
                   >
                     <Link href={item.url}>
-                      <Icon />
+                      <Icon
+                        className={`mr-2 h-6 w-6`} // Icon size and active color
+                      />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -150,7 +173,7 @@ export default function AppSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size='lg'
-                  className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+                  className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-white'
                 >
                   {user && (
                     <UserAvatarProfile
@@ -187,14 +210,6 @@ export default function AppSidebar() {
                   >
                     <IconUserCircle className='mr-2 h-4 w-4' />
                     Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <IconCreditCard className='mr-2 h-4 w-4' />
-                    Billing
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <IconBell className='mr-2 h-4 w-4' />
-                    Notifications
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
