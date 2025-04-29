@@ -9,6 +9,7 @@ import {
 interface TimeRangeSelectorProps {
   value: 'day' | 'month' | 'year';
   onChange: (value: 'day' | 'month' | 'year') => void;
+  className?: string;
 }
 
 export function TimeRangeSelector({ value, onChange }: TimeRangeSelectorProps) {
