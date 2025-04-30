@@ -16,8 +16,8 @@ const META_THEME_COLORS = {
 };
 
 export const metadata: Metadata = {
-  title: 'Next Shadcn',
-  description: 'Basic dashboard with Next.js and Shadcn'
+  title: 'Verdant',
+  description: 'The smart agriculture is solution you need.'
 };
 
 export const viewport: Viewport = {
