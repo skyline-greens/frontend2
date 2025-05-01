@@ -19,28 +19,34 @@ import {
 import { useEffect, useState } from 'react';
 
 export function CellMetrics(): React.ReactElement {
-  const [metric, setMetric] = useState<CellMetric>({});
-  const [previousMetric, setPreviousMetrics] = useState<CellMetric>({});
+  const [metrics, setMetric] = useState<CellMetric[]>([]);
 
   const displayValue = (value?: number, unit: string = ''): string => {
     return value !== undefined ? `${value}${unit}` : 'N/A';
   };
 
-  const displayDifference = (current?: number, previous?: number, unit: string = ''): string => {
-    if (current !== undefined && previous !== undefined) {
-      const diff = current - previous;
-      return `${diff >= 0 ? '+' : ''}${diff}${unit}`;
+  const displayDifference = (values: (number | undefined)[], unit: string = ''): string => {
+    if (values.length < 2) {
+      return 'N/A';
     }
-    return 'N/A';
+    if (values[0] === undefined || values[1] === undefined) {
+      return 'N/A';
+    }
+
+    const diff = values[0] - values[1];
+    return `${diff >= 0 ? '+' : ''}${diff}${unit}`;
   };
 
   useEffect(() => {
     const metricsHandler = (data: CellMetric) => {
-      setPreviousMetrics(metric);
-      setMetric(data);
-      if (!previousMetric.light) {
-        setPreviousMetrics(data);
-      }
+      setMetric((current) => {
+        const newMetrics: CellMetric[] = [...current];
+        newMetrics.unshift(data);
+        if (newMetrics.length > 2) {
+          newMetrics.pop();
+        }
+        return newMetrics;
+      });
     }
     socket.on("metrics", metricsHandler);
     () => {
@@ -59,12 +65,12 @@ export function CellMetrics(): React.ReactElement {
           <div className='flex flex-1 flex-col gap-y-1'>
             <CardDescription className='text-xs'>temperature</CardDescription>
             <CardTitle className='text-xl font-bold tabular-nums @[250px]/card:text-2xl'>
-              {displayValue(metric.temperature, '°C')}
+              {displayValue(metrics.length > 0 ? metrics[0].temperature : undefined, '°C')}
             </CardTitle>
             <CardAction className='mt-2'>
               <Badge variant='outline' className='flex items-center'>
                 <IconTrendingUp className='h-4 w-4' />
-                {displayDifference(metric.temperature, previousMetric.temperature, '°C')}
+                {displayDifference(metrics.map((metric) => metric.temperature), '°C')}
               </Badge>
             </CardAction>
           </div>
@@ -80,12 +86,12 @@ export function CellMetrics(): React.ReactElement {
           <div className='flex flex-1 flex-col gap-y-1'>
             <CardDescription className='text-xs'>humidity</CardDescription>
             <CardTitle className='text-xl font-bold tabular-nums @[250px]/card:text-2xl'>
-              {displayValue(metric.humidity, '%')}
+              {displayValue(metrics.length > 0 ? metrics[0].humidity : undefined, '%')}
             </CardTitle>
             <CardAction className='mt-2'>
               <Badge variant='outline' className='flex items-center gap-1'>
                 <IconTrendingUp className='h-4 w-4' />
-                {displayDifference(metric.humidity, previousMetric.humidity, '%')}
+                {displayDifference(metrics.map((metric) => metric.humidity), '%')}
               </Badge>
             </CardAction>
           </div>
@@ -101,12 +107,12 @@ export function CellMetrics(): React.ReactElement {
           <div className='flex flex-1 flex-col gap-y-1'>
             <CardDescription className='text-xs'>CO2 level</CardDescription>
             <CardTitle className='text-xl font-bold tabular-nums @[250px]/card:text-2xl'>
-              {displayValue(metric.co2, ' ppm')}
+              {displayValue(metrics.length > 0 ? metrics[0].co2 : undefined, 'ppm')}
             </CardTitle>
             <CardAction className='mt-2'>
               <Badge variant='outline' className='flex items-center gap-1'>
                 <IconTrendingUp className='h-4 w-4' />
-                {displayDifference(metric.co2, previousMetric.co2, ' ppm')}
+                {displayDifference(metrics.map((metric) => metric.co2), 'ppm')}
               </Badge>
             </CardAction>
           </div>
