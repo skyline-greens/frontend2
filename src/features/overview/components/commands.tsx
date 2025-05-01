@@ -188,44 +188,6 @@ export default function Commands() {
             </div>
 
             {/* Temperature Control */}
-            <div className='flex flex-col items-center gap-2'>
-              <span className='text-sm font-medium text-gray-600'>
-                Temperature
-              </span>
-              <div
-                className={`flex items-center rounded-4xl border p-1 transition-colors duration-300 ${
-                  mode !== 'Automatic'
-                    ? 'cursor-not-allowed bg-gray-100 opacity-50'
-                    : 'bg-white'
-                }`}
-              >
-                <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full bg-green-700 text-white transition-colors duration-300 ${
-                    mode !== 'Automatic'
-                      ? 'cursor-not-allowed'
-                      : 'cursor-pointer hover:bg-green-600'
-                  }`}
-                  onClick={() => adjustTemperature(-1)}
-                >
-                  <span className='text-lg'>-</span>
-                </div>
-                <div className='mx-2 flex min-w-[50px] flex-1 items-center justify-center rounded bg-white py-2'>
-                  <span className='text-lg font-semibold text-gray-800'>
-                    {temperature}°C
-                  </span>
-                </div>
-                <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full bg-green-700 text-white transition-colors duration-300 ${
-                    mode !== 'Automatic'
-                      ? 'cursor-not-allowed'
-                      : 'cursor-pointer hover:bg-green-600'
-                  }`}
-                  onClick={() => adjustTemperature(1)}
-                >
-                  <span className='text-lg'>+</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </CardContent>
