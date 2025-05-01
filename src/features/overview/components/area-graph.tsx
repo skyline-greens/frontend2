@@ -68,7 +68,6 @@ export default function CO2AreaChart({ cellId }: { cellId: string }) {
       }
 
       socket.on("metrics", metricHandler);
-      console.log("CO2 metric handler loaded");
       return () => {
         socket.off("metrics", metricHandler);
         setData([]);

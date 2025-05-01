@@ -8,4 +8,5 @@ export interface CellMetric {
   airPump?: number;
   waterPump?: number;
   light?: number;
+  heater?: number;
 }

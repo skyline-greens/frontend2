@@ -86,14 +86,12 @@ interface CellMetric {
       }
 
       socket.on("metrics", metricHandler);
-      console.log("Metric handler loaded");
       return () => {
         socket.off("metrics", metricHandler);
         setData([]);
       }
     }
   }, [cellId, timeRange, selectedYear, selectedMonth, selectedDay, realtimeMode]);
-  console.log(data);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from(
