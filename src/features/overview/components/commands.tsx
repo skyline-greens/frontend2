@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { socket } from '@/socket';
 import { CellMetric } from '@/dto/cell-metric.dto';
 import { CommandDto } from '@/dto/command.dto';
+import { fetchCellMode, updateCellMode, sendCellCommand } from './api';
 
 interface ActuatorStates {
   light: 'On' | 'Off';
@@ -45,19 +46,13 @@ export default function Commands({ cellId }: CommandsProps) {
   }, []);
 
   useEffect(() => {
-    const fetchMode = async () => {
+    const getMode = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`http://localhost:8000/cells/${cellId}/mode`);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch mode');
-        }
-
-        const data = await response.json();
-        const newMode = data.mode === 'manual' ? 'Manual' : 'Automatic';
+        const newMode = await fetchCellMode(cellId);
         setMode(newMode);
-        if (newMode == "Automatic") {
+        
+        if (newMode === "Automatic") {
           socket.on("metrics", metricHandler);
           return () => {
             socket.off("metrics", metricHandler);
@@ -70,7 +65,7 @@ export default function Commands({ cellId }: CommandsProps) {
       }
     };
 
-    fetchMode();
+    getMode();
     return () => {
       socket.off("metrics", metricHandler);
     };
@@ -81,20 +76,8 @@ export default function Commands({ cellId }: CommandsProps) {
 
     try {
       setIsLoading(true);
-      const response = await fetch(`http://localhost:8000/cells/${cellId}/mode`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          mode: newMode === 'Manual' ? 'manual' : 'auto'
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update mode');
-      }
-
+      await updateCellMode(cellId, newMode);
+      
       // Only update local state if the request succeeded
       setMode(newMode);
       if (newMode === "Manual") {
@@ -110,7 +93,7 @@ export default function Commands({ cellId }: CommandsProps) {
     }
   };
 
-  const sendCommandToBackend = async (commandType: string, value: boolean) => {
+  const sendCommand = async (commandType: string, value: boolean) => {
     if (mode !== 'Manual') return;
 
     try {
@@ -123,17 +106,7 @@ export default function Commands({ cellId }: CommandsProps) {
         heater: commandType === 'heater' ? value : states.heater === 'On'
       };
       
-      const response = await fetch(`http://localhost:8000/cells/${cellId}/command`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to update ${commandType}`);
-      }
+      const response = await sendCellCommand(cellId, payload);
 
       // Update local state only after successful API call
       const newValue = value ? 'On' : 'Off';
@@ -142,8 +115,7 @@ export default function Commands({ cellId }: CommandsProps) {
         [commandType]: newValue
       }));
 
-      const data = await response.json();
-      console.log(data.message); // "sent command successfully"
+      console.log(response.message); // "sent command successfully"
     } catch (error) {
       console.error(`Error updating ${commandType}:`, error);
       // Revert the UI state in case of failure
@@ -155,28 +127,28 @@ export default function Commands({ cellId }: CommandsProps) {
   const toggleLight = async () => {
     if (mode === 'Manual') {
       const newValue = states.light === 'On' ? false : true;
-      await sendCommandToBackend('light', newValue);
+      await sendCommand('light', newValue);
     }
   };
 
   const toggleAirpump = async () => {
     if (mode === 'Manual') {
       const newValue = states.airPump === 'On' ? false : true;
-      await sendCommandToBackend('airPump', newValue);
+      await sendCommand('airPump', newValue);
     }
   };
 
   const toggleWaterpump = async () => {
     if (mode === 'Manual') {
       const newValue = states.waterPump === 'On' ? false : true;
-      await sendCommandToBackend('waterPump', newValue);
+      await sendCommand('waterPump', newValue);
     }
   };
 
   const toggleHeater = async () => {
     if (mode === 'Manual') {
       const newValue = states.heater === 'On' ? false : true;
-      await sendCommandToBackend('heater', newValue);
+      await sendCommand('heater', newValue);
     }
   };
 
