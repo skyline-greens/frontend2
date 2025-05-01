@@ -9,12 +9,12 @@ export function ConnectedStatus({ cellId }: { cellId: string }): React.ReactElem
   useEffect(() => {
     const onConnect = () => {
       setStatus("connected");
-      socket.emit("subscribeToMetrics", { cellId }, (value: any) => {
+      socket.emit("subscribeToMetrics", { cellId }, (_: any) => {
         setStatus("subscribed");
       });
     }
 
-    socket.emit("subscribeToMetrics", { cellId }, (value: any) => {
+    socket.emit("subscribeToMetrics", { cellId }, (_: any) => {
       setStatus("subscribed");
     });
 

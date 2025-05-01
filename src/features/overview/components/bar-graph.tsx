@@ -3,7 +3,7 @@
 import { TimeRangeSelector } from '@/features/overview/TimeRangeSelector';
 import * as React from 'react';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
-import { useMemo, useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Select,
   SelectTrigger,
@@ -24,6 +24,10 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from '@/components/ui/chart';
+import { fetchMetrics, Metric } from './api';
+import { Button } from '@/components/ui/button';
+import { socket } from '@/socket';
+import { appendWithMaxLength } from '@/helpers/general';
 
 export const description = 'An interactive line chart';
 
@@ -38,60 +42,63 @@ const chartConfig = {
   }
 } satisfies ChartConfig;
 
-export function LineGraph() {
+
+export function LineGraph({ cellId }: { cellId: string }) {
   const [timeRange, setTimeRange] = useState<'day' | 'month' | 'year'>('month');
-  const [selectedYear, setSelectedYear] = useState<number>(2024);
-  const [selectedMonth, setSelectedMonth] = useState<number>(4);
-  const [selectedDay, setSelectedDay] = useState<number>(1);
-  const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>('temperature');
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
+  const [selectedDay, setSelectedDay] = useState<number>(new Date().getDate());
+  const [activeChart, setActiveChart] = React.useState<keyof typeof chartConfig>('temperature');
+  const [data, setData] = useState<Metric[]>([]);
+  const [realtimeMode, setRealtimeMode] = useState(false); // State for toggling realtime mode
 
-  const chartData = useMemo(() => {
-    const data = [];
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
-    const currentDay = now.getDate();
-
-    if (timeRange === 'year') {
-      for (let month = 1; month <= 12; month++) {
-        const temperature = Math.floor(Math.random() * 40) + 10;
-        const humidity = Math.floor(Math.random() * 70) + 30;
-        data.push({
-          date: `${selectedYear}-${month.toString().padStart(2, '0')}-01`,
-          temperature,
-          humidity
-        });
-      }
-    } else if (timeRange === 'month') {
-      const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
-      for (let day = 1; day <= daysInMonth; day++) {
-        const temperature = Math.floor(Math.random() * 40) + 10;
-        const humidity = Math.floor(Math.random() * 70) + 30;
-        data.push({
-          date: `${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
-          temperature,
-          humidity
-        });
-      }
+  useEffect(() => {
+    if (!realtimeMode) {
+      fetchMetrics({
+        cellId: cellId,
+        timeRange: timeRange,
+        selectedYear: selectedYear,
+        selectedMonth: selectedMonth,
+        selectedDay: selectedDay,
+        setData,
+        baseUrl: 'http://localhost:8000',
+      });
     } else {
-      for (let hour = 0; hour < 24; hour++) {
-        const temperature = Math.floor(Math.random() * 15) + 20;
-        const humidity = Math.floor(Math.random() * 30) + 50;
-        data.push({
-          date: `${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-${selectedDay.toString().padStart(2, '0')}T${hour.toString().padStart(2, '0')}:00:00`,
-          temperature,
-          humidity
-        });
+interface CellMetric {
+  temperature?: number;
+  humidity?: number;
+  lightIntensity?: number;
+  moisture?: number;
+  co2?: number;
+  airPump?: number;
+  waterPump?: number;
+  light?: number;
+}
+      const metricHandler = (metric: CellMetric) => {
+        setData((old) => appendWithMaxLength(old, {
+          ...metric,
+          air: metric.airPump == 1, 
+          water: metric.waterPump == 1,
+          light: metric.light == 1,
+          cellId,
+          date: new Date().toString(),
+        }));
+      }
+
+      socket.on("metrics", metricHandler);
+      console.log("Metric handler loaded");
+      return () => {
+        socket.off("metrics", metricHandler);
+        setData([]);
       }
     }
-    return data;
-  }, [timeRange, selectedYear, selectedMonth, selectedDay]);
+  }, [cellId, timeRange, selectedYear, selectedMonth, selectedDay, realtimeMode]);
+  console.log(data);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from(
-    { length: currentYear - 2020 + 1 },
-    (_, i) => 2020 + i
+    { length: currentYear - 2023 + 1 },
+    (_, i) => 2023 + i
   );
 
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -99,10 +106,10 @@ export function LineGraph() {
 
   const total = React.useMemo(
     () => ({
-      Temperature: chartData.reduce((acc, curr) => acc + curr.temperature, 0),
-      Humidity: chartData.reduce((acc, curr) => acc + curr.humidity, 0)
+      Temperature: data?.reduce((acc, curr) => acc + (curr?.temperature || 0), 0) || 0,
+      Humidity: data?.reduce((acc, curr) => acc + (curr?.humidity || 0), 0) || 0
     }),
-    [chartData]
+    [data]
   );
 
   const [isClient, setIsClient] = React.useState(false);
@@ -133,11 +140,13 @@ export function LineGraph() {
             value={timeRange}
             onChange={setTimeRange}
             className='w-full sm:w-auto'
+            disabled={realtimeMode}
           />
-          <div className='grid grid-cols-2 gap-2 sm:flex sm:gap-2'>
+          <div className='grid grid-cols-3 gap-2 sm:flex sm:gap-2'>
             <Select
               value={selectedYear.toString()}
               onValueChange={(val) => setSelectedYear(Number(val))}
+              disabled={realtimeMode}
             >
               <SelectTrigger className='w-full'>
                 <SelectValue placeholder='Year' />
@@ -155,6 +164,7 @@ export function LineGraph() {
               <Select
                 value={selectedMonth.toString()}
                 onValueChange={(val) => setSelectedMonth(Number(val))}
+                disabled={realtimeMode}
               >
                 <SelectTrigger className='w-full'>
                   <SelectValue placeholder='Month' />
@@ -175,6 +185,7 @@ export function LineGraph() {
               <Select
                 value={selectedDay.toString()}
                 onValueChange={(val) => setSelectedDay(Number(val))}
+                disabled={realtimeMode}
               >
                 <SelectTrigger className='w-full'>
                   <SelectValue placeholder='Day' />
@@ -188,6 +199,16 @@ export function LineGraph() {
                 </SelectContent>
               </Select>
             )}
+            <Button
+              onClick={() => setRealtimeMode(!realtimeMode)}
+              className={`w-full mr-2 transition-colors duration-300 sm:w-auto ${
+realtimeMode
+? 'bg-green-100 text-green-700 shadow hover:bg-green-200'
+: 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+}`}
+            >
+              Real time: {realtimeMode ? 'On' : 'Off'}
+            </Button>
           </div>
         </div>
         <div className='mb-6 flex gap-4'>
@@ -216,102 +237,117 @@ export function LineGraph() {
           })}
         </div>
         <ChartContainer config={chartConfig} className='h-[300px] w-full'>
-          <LineChart
-            data={chartData}
-            margin={{
-              left: 12,
-              right: 12,
-              top: 12,
-              bottom: 12
-            }}
-          >
-            <defs>
-              <linearGradient id='fillLine' x1='0' y1='0' x2='0' y2='1'>
-                <stop offset='0%' stopColor='#15803d' stopOpacity={0.8} />
-                <stop offset='100%' stopColor='#15803d' stopOpacity={0.2} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid
-              vertical={false}
-              stroke='#e5e7eb'
-              strokeDasharray='3 3'
-            />
-            <XAxis
-              dataKey='date'
-              tickLine={false}
-              axisLine={{ stroke: '#d1d5db' }}
-              tickMargin={8}
-              minTickGap={32}
-              tick={{ fill: '#6b7280' }}
-              tickFormatter={(value) => {
-                if (timeRange === 'day') {
-                  const date = new Date(value);
-                  return date.toLocaleTimeString('en-US', {
-                    hour: 'numeric',
-                    hour12: true
-                  });
-                } else {
-                  const date = new Date(value);
-                  return date.toLocaleDateString('en-US', {
-                    month: timeRange === 'year' ? 'short' : undefined,
-                    day: 'numeric'
-                  });
-                }
+          {data.length === 0 ? (
+            <div className='flex h-full items-center justify-center'>
+              <p className='text-2xl font-bold text-gray-800'>No Data</p>
+            </div>
+          ) : (
+            <LineChart
+              data={data}
+              margin={{
+                left: 12,
+                right: 12,
+                top: 12,
+                bottom: 12
               }}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={{ stroke: '#d1d5db' }}
-              tick={{ fill: '#6b7280' }}
-              tickFormatter={(value) =>
-                activeChart === 'temperature' ? `${value}°C` : `${value}%`
-              }
-            />
-            <ChartTooltip
-              cursor={{ stroke: '#15803d', strokeOpacity: 0.1 }}
-              content={
-                <ChartTooltipContent
-                  className='w-[180px] rounded-lg border border-gray-200 bg-white p-3 shadow-md'
-                  nameKey='views'
-                  labelFormatter={(value) => {
-                    const date = new Date(value);
+            >
+              <defs>
+                <linearGradient id='fillLine' x1='0' y1='0' x2='0' y2='1'>
+                  <stop offset='0%' stopColor='#15803d' stopOpacity={0.8} />
+                  <stop offset='100%' stopColor='#15803d' stopOpacity={0.2} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                vertical={false}
+                stroke='#e5e7eb'
+                strokeDasharray='3 3'
+              />
+              <XAxis
+                dataKey='date'
+                tickLine={false}
+                axisLine={{ stroke: '#d1d5db' }}
+                tickMargin={8}
+                minTickGap={32}
+                tick={{ fill: '#6b7280' }}
+                  tickFormatter={(value) => {
+                    if (realtimeMode) {
+                      const date = new Date(value);
+                      const hours = date.getHours().toString().padStart(2, '0');
+                      const minutes = date.getMinutes().toString().padStart(2, '0');
+                      const seconds = date.getSeconds().toString().padStart(2, '0');
+                      const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
+                      const microseconds = '000'; // Simulated, as Date lacks microsecond precision
+                      return `${hours}:${minutes}:${seconds}.${milliseconds}${microseconds}`;
+                    }
                     if (timeRange === 'day') {
+                      const date = new Date(value);
                       return date.toLocaleTimeString('en-US', {
                         hour: 'numeric',
-                        minute: 'numeric',
-                        hour12: true,
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
+                        hour12: true
                       });
                     } else {
+                      const date = new Date(value);
                       return date.toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
+                        month: timeRange === 'year' ? 'short' : undefined,
+                        day: 'numeric'
                       });
                     }
                   }}
-                  formatter={(value) =>
-                    activeChart === 'temperature' ? `${value}°C` : `${value}%`
-                  }
-                />
-              }
-            />
-            <Line
-              type='monotone'
-              dataKey={activeChart}
-              stroke='#15803d'
-              strokeWidth={2}
-              dot={false}
-              activeDot={{
-                r: 6,
-                fill: '#15803d',
-                stroke: '#fff',
-                strokeWidth: 2
-              }}
-            />
-          </LineChart>
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={{ stroke: '#d1d5db' }}
+                tick={{ fill: '#6b7280' }}
+                tickFormatter={(value) =>
+                  activeChart === 'temperature' ? `${value}°C` : `${value}%`
+                }
+              />
+              <ChartTooltip
+                cursor={{ stroke: '#15803d', strokeOpacity: 0.1 }}
+                content={
+                  <ChartTooltipContent
+                    className='w-[180px] rounded-lg border border-gray-200 bg-white p-3 shadow-md'
+                    nameKey='views'
+                    labelFormatter={(value) => {
+                      const date = new Date(value);
+                      if (timeRange === 'day') {
+                        return date.toLocaleTimeString('en-US', {
+                          hour: 'numeric',
+                          minute: 'numeric',
+                          hour12: true,
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        });
+                      } else {
+                        return date.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        });
+                      }
+                    }}
+                    formatter={(value) =>
+                      activeChart === 'temperature' ? `${value}°C` : `${value}%`
+                    }
+                  />
+                }
+              />
+              <Line
+                type='monotone'
+                dataKey={activeChart}
+                stroke='#15803d'
+                strokeWidth={2}
+                dot={false}
+                activeDot={{
+                  r: 6,
+                  fill: '#15803d',
+                  stroke: '#fff',
+                  strokeWidth: 2
+                }}
+              />
+            </LineChart>
+          )}
         </ChartContainer>
       </CardContent>
     </Card>

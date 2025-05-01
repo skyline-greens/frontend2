@@ -7,6 +7,7 @@ import {
   CardDescription,
   CardAction,
 } from '@/components/ui/card';
+import { CellMetric } from '@/dto/cell-metric.dto';
 import { socket } from '@/socket';
 import { IconTrendingUp } from '@tabler/icons-react';
 import {
@@ -17,16 +18,6 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-interface CellMetric {
-  temperature?: number;
-  humidity?: number;
-  lightIntensity?: number;
-  moisture?: number;
-  co2?: number;
-  airPump?: number;
-  waterPump?: number;
-  light?: number;
-}
 export function CellMetrics(): React.ReactElement {
   const [metric, setMetric] = useState<CellMetric>({});
   const [previousMetric, setPreviousMetrics] = useState<CellMetric>({});

@@ -4,6 +4,7 @@ import Commands from '@/features/overview/components/commands';
 import CO2AreaChart from '@/features/overview/components/area-graph';
 import { ConnectedStatus } from './components/connected-status';
 import { CellMetrics } from './components/cell-metrics';
+import { CELL_ID } from '@/constants/mqtt';
 export default function OverViewLayout({
   sales,
   pie_stats,
@@ -22,7 +23,8 @@ export default function OverViewLayout({
           <h2 className='mb-4 text-2xl font-bold tracking-tight'>
             Cell Dashboard
           </h2>
-          <ConnectedStatus cellId='1e4c29f9-9f13-46c5-9da0-5f6fe251dd53'/>
+          { /*<ConnectedStatus cellId='1e4c29f9-9f13-46c5-9da0-5f6fe251dd53'/> */ }
+          <ConnectedStatus cellId={CELL_ID} />
         </div>
 
         <CellMetrics />
@@ -32,7 +34,7 @@ export default function OverViewLayout({
             <Commands />
           </div>
           <div className='col-span-10 mt-4 rounded-xl bg-[var(--card)] shadow-xs'>
-            <CO2AreaChart />
+            <CO2AreaChart cellId={CELL_ID} />
           </div>
         </div>
       </div>

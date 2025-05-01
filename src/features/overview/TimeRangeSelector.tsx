@@ -9,12 +9,13 @@ import {
 interface TimeRangeSelectorProps {
   value: 'day' | 'month' | 'year';
   onChange: (value: 'day' | 'month' | 'year') => void;
+  disabled?: boolean;
   className?: string;
 }
 
-export function TimeRangeSelector({ value, onChange }: TimeRangeSelectorProps) {
+export function TimeRangeSelector({ value, onChange, disabled }: TimeRangeSelectorProps) {
   return (
-    <Select value={value} onValueChange={onChange}>
+    <Select value={value} onValueChange={onChange} disabled={disabled}>
       <SelectTrigger className='w-[150px] border-0 bg-green-800 text-white shadow-lg'>
         <SelectValue placeholder='Select range' />
       </SelectTrigger>
