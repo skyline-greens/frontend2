@@ -8,6 +8,8 @@ services:
       - .:/app
     ports:
       - "3001:3000"
+    networks:
+      dev:
 
   prod:
     build:
@@ -15,3 +17,9 @@ services:
       target: prod
     ports:
       - "3000:3000"
+    networks:
+      prod:
+
+networks:
+  prod:
+  dev:

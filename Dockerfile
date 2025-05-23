@@ -26,7 +26,8 @@ RUN corepack enable pnpm && pnpm run build
 FROM base AS prod
 WORKDIR /app
 
-ENV NODE_ENV=production
+# Uncomment when clerk removed
+# ENV NODE_ENV=production
 
 RUN addgroup --system --gid 900 verdant
 RUN adduser --system --uid 900 nextjs
