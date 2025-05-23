@@ -9,12 +9,12 @@ export function ConnectedStatus({ cellId }: { cellId: string }): React.ReactElem
   useEffect(() => {
     const onConnect = () => {
       setStatus("connected");
-      socket.emit("subscribeToMetrics", { cellId }, (_: any) => {
+      socket.emit("subscribeToMetrics", { cellId }, () => {
         setStatus("subscribed");
       });
     }
 
-    socket.emit("subscribeToMetrics", { cellId }, (_: any) => {
+    socket.emit("subscribeToMetrics", { cellId }, () => {
       setStatus("subscribed");
     });
 
@@ -29,7 +29,7 @@ export function ConnectedStatus({ cellId }: { cellId: string }): React.ReactElem
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
     }
-  }, []);
+  }, [cellId]);
 
   const classMap = {
     subscribed: 'bg-green-100 text-green-700 shadow hover:bg-green-200',

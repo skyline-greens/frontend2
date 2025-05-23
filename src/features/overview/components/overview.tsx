@@ -8,9 +8,8 @@ import {
   CardTitle,
   CardDescription,
   CardAction,
-  CardFooter
 } from '@/components/ui/card';
-import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
+import { IconTrendingUp } from '@tabler/icons-react';
 import React from 'react';
 import {
   ThermometerIcon,
@@ -19,12 +18,10 @@ import {
   CloudIcon
 } from 'lucide-react';
 import Commands from '@/features/overview/components/commands';
+import { CELL_ID } from '@/constants/mqtt';
 
 export default function OverViewLayout({
-  sales,
-  pie_stats,
   bar_stats,
-  area_stats
 }: {
   sales: React.ReactNode;
   pie_stats: React.ReactNode;
@@ -137,10 +134,10 @@ export default function OverViewLayout({
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7'>
           <div className='col-span-10'>{bar_stats}</div>
           <div className='col-span-10 mt-4 rounded-xl bg-[var(--card)] shadow-xs'>
-            <Commands />
+            <Commands cellId={CELL_ID} />
           </div>
           <div className='col-span-10 mt-4 rounded-xl bg-[var(--card)] shadow-xs'>
-            <CO2AreaChart />
+            <CO2AreaChart cellId={CELL_ID} />
           </div>
         </div>
       </div>

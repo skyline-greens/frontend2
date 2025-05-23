@@ -159,10 +159,6 @@ export default function Commands({ cellId }: CommandsProps) {
     return state === 'On' ? 'bg-green-500' : 'bg-gray-300';
   };
 
-  const isButtonDisabled = (controlType: string) => {
-    return mode !== 'Manual' || actionInProgress === controlType;
-  };
-
   return (
     <Card className='@container/card rounded-xl bg-white p-4 shadow-lg'>
       <CardHeader>

@@ -6,10 +6,7 @@ import { ConnectedStatus } from './components/connected-status';
 import { CellMetrics } from './components/cell-metrics';
 import { CELL_ID } from '@/constants/mqtt';
 export default function OverViewLayout({
-  sales,
-  pie_stats,
   bar_stats,
-  area_stats
 }: {
   sales: React.ReactNode;
   pie_stats: React.ReactNode;
