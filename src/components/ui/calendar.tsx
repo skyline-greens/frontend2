@@ -65,8 +65,8 @@ function Calendar({
         ...classNames
       }}
       components={{
-        IconLeft: LeftIcon,
-        IconRight: RightIcon
+        PreviousMonthButton: LeftIcon,
+        NextMonthButton: RightIcon
       }}
       {...props}
     />
