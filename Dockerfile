@@ -1,12 +1,14 @@
 FROM node:24-alpine3.20 AS base
 
+RUN corepack enable pnpm
+
 FROM base AS deps
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat
 
 COPY ./package.json ./pnpm-lock.yaml ./
-RUN corepack enable pnpm && pnpm i --frozen-lock
+RUN --mount=type=cache,target=/pnpm/store pnpm i --frozen-lock
 
 FROM base AS dev
 WORKDIR /app
@@ -21,7 +23,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . ./
 
-RUN corepack enable pnpm && pnpm run build
+RUN pnpm run build
 
 FROM base AS prod
 WORKDIR /app
