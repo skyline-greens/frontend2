@@ -51,7 +51,7 @@ export async function login(data: TAuthSchema) {
             httpOnly: true,
             sameSite: "strict",
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 1000 * 60 * 1, // 15 minutes (adjust based on your access token expiry)
+            maxAge: 1000 * 60 * 120, 
         });
 
         console.log("Login successful");
@@ -119,7 +119,7 @@ export async function refreshToken(): Promise<{ success: boolean; access?: strin
             httpOnly: true,
             sameSite: "strict",
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 1000 * 60 * 15, // 15 minutes
+            maxAge: 1000 * 60 * 120,
         });
 
         // Update refresh token if a new one was provided
@@ -264,7 +264,7 @@ export async function authenticatedFetch(url: string, options: RequestInit = {})
         },
     });
 
-    // If we get a 401, try to refresh and retry once
+   
     if (response.status === 401) {
         const refreshResult = await refreshToken();
         
