@@ -1,6 +1,6 @@
 'use client';
-import { ClerkProvider } from '@clerk/nextjs';
-import { dark } from '@clerk/themes';
+// import { ClerkProvider } from '@clerk/nextjs';
+// import { dark } from '@clerk/themes';
 import { useTheme } from 'next-themes';
 import React from 'react';
 import { ActiveThemeProvider } from '../active-theme';
@@ -17,14 +17,14 @@ export default function Providers({
 
   return (
     <>
-      <ActiveThemeProvider initialTheme={activeThemeValue}>
-        <ClerkProvider
+      <ActiveThemeProvider   initialTheme={activeThemeValue}>
+        {/* <ClerkProvider
           appearance={{
             baseTheme: resolvedTheme === 'dark' ? dark : undefined
           }}
-        >
+        > */}
           {children}
-        </ClerkProvider>
+        {/* </ClerkProvider> */}
       </ActiveThemeProvider>
     </>
   );
