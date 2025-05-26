@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { CommandDto } from '@/dto/command.dto';
+import { BACKEND_URL } from '@/constants/api';
 
 // Provided types
 export interface Metric {
@@ -48,7 +49,7 @@ export const fetchMetrics = async ({
   selectedMonth,
   selectedDay,
   setData,
-  baseUrl = 'http://localhost:8000',
+  baseUrl = BACKEND_URL,
 }: FetchMetricsParams) => {
   try {
     const queryParams: QueryMetricsDto = {
@@ -99,7 +100,7 @@ export const fetchMetrics = async ({
 /**
  * Fetches the current mode (Manual or Automatic) for a specific cell
  */
-export const fetchCellMode = async (cellId: string, baseUrl = 'http://localhost:8000') => {
+export const fetchCellMode = async (cellId: string, baseUrl = BACKEND_URL) => {
   try {
     const response = await fetch(`${baseUrl}/cells/${cellId}/mode`);
 
@@ -121,7 +122,7 @@ export const fetchCellMode = async (cellId: string, baseUrl = 'http://localhost:
 export const updateCellMode = async (
   cellId: string, 
   newMode: 'Manual' | 'Automatic',
-  baseUrl = 'http://localhost:8000'
+  baseUrl = BACKEND_URL
 ) => {
   try {
     const response = await fetch(`${baseUrl}/cells/${cellId}/mode`, {
@@ -151,7 +152,7 @@ export const updateCellMode = async (
 export const sendCellCommand = async (
   cellId: string, 
   command: CommandDto,
-  baseUrl = 'http://localhost:8000'
+  baseUrl = BACKEND_URL
 ) => {
   try {
     const response = await fetch(`${baseUrl}/cells/${cellId}/command`, {

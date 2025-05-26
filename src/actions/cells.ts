@@ -1,6 +1,7 @@
 'use server'
+import { BACKEND_URL } from "@/constants/api";
 import { cookies } from "next/headers";
-const base_url = 'http://localhost:8000'
+const base_url = BACKEND_URL;
 
 // Adjust this type to match your backend's Cell entity
 export type Cell = {

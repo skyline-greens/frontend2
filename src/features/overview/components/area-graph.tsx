@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button';
 import { fetchMetrics, Metric } from './api';
 import { socket } from '@/socket';
 import { appendWithMaxLength } from '@/helpers/general';
+import { BACKEND_URL } from '@/constants/api';
 
 
 export default function CO2AreaChart({ cellId }: { cellId: string }) {
@@ -53,7 +54,7 @@ export default function CO2AreaChart({ cellId }: { cellId: string }) {
         selectedMonth: selectedMonth,
         selectedDay: selectedDay,
         setData,
-        baseUrl: 'http://localhost:8000',
+        baseUrl: BACKEND_URL,
       });
     } else {
       const metricHandler = (metric: any) => {

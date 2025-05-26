@@ -28,6 +28,7 @@ import { fetchMetrics, Metric } from './api';
 import { Button } from '@/components/ui/button';
 import { socket } from '@/socket';
 import { appendWithMaxLength } from '@/helpers/general';
+import { BACKEND_URL } from '@/constants/api';
 
 export const description = 'An interactive line chart';
 
@@ -61,7 +62,7 @@ export function LineGraph({ cellId }: { cellId: string }) {
         selectedMonth: selectedMonth,
         selectedDay: selectedDay,
         setData,
-        baseUrl: 'http://localhost:8000',
+        baseUrl: BACKEND_URL,
       });
     } else {
 interface CellMetric {

@@ -1,5 +1,3 @@
-"use client";
-import { Metadata } from 'next';
 import { Button } from "@/components/ui/button";
 import {
    Card,
@@ -51,7 +49,6 @@ export const registerSchema =  z
   })
 
 export type TRegisterSchema = z.infer<typeof registerSchema>;
-
 
 
 export default function SignUpViewPage() {

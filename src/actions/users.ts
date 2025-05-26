@@ -1,6 +1,7 @@
 'use server';
+import { BACKEND_URL } from "@/constants/api";
 import { cookies } from "next/headers";
-const base_url = 'http://localhost:8000';
+const base_url = BACKEND_URL;
 
 export type User = {
   id: string;
