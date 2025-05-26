@@ -13,6 +13,17 @@ export interface NavItem {
   items?: NavItem[];
 }
 
+export type TPayload = {
+  id: string;
+  role: string;
+  name: string;
+  email: string;
+  phone:string;
+  iat?: number;
+  exp?: number;
+  accessToken: string;
+};
+
 export interface NavItemWithChildren extends NavItem {
   items: NavItemWithChildren[];
 }
