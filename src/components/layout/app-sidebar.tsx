@@ -30,7 +30,8 @@ import {
 import { UserAvatarProfile } from '@/components/user-avatar-profile';
 import { navItems } from '@/constants/data';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { useUser } from '@clerk/nextjs';
+import Avatar from 'boring-avatars';
+import { useUserStore } from '@/store/user'; 
 import {
   IconChevronRight,
   IconChevronsDown,
@@ -39,7 +40,7 @@ import {
   IconUserCircle
 } from '@tabler/icons-react';
 import Image from 'next/image';
-import { SignOutButton } from '@clerk/nextjs';
+// import { SignOutButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -52,8 +53,8 @@ export const company = {
 
 export default function AppSidebar() {
   const pathname = usePathname();
+  const user = useUserStore((state) => state.user);
   const { isOpen } = useMediaQuery();
-  const { user } = useUser();
   const router = useRouter();
   React.useEffect(() => {
     // Side effects based on sidebar state changes
@@ -167,13 +168,20 @@ export default function AppSidebar() {
                   size='lg'
                   className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-white'
                 >
-                  {user && (
-                    <UserAvatarProfile
-                      className='h-8 w-8 rounded-lg'
-                      showInfo
-                      user={user}
-                    />
-                  )}
+
+              <div className="flex items-center gap-3">
+                <Avatar
+                  size={40}
+                  name={user?.name}
+                  variant="beam"
+                  colors={["#fb6900", "#f63700", "#004853", "#007e80", "#00b9bd"]}
+                />
+                <div className="flex flex-col items-start">
+                <span className="font-medium text-sm">{user?.name}</span>
+                <span className="text-xs text-muted-foreground">{user?.email}</span>
+                </div>
+              </div>
+     
                   <IconChevronsDown className='ml-auto size-4' />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -184,15 +192,20 @@ export default function AppSidebar() {
                 sideOffset={4}
               >
                 <DropdownMenuLabel className='p-0 font-normal'>
-                  <div className='px-1 py-1.5'>
-                    {user && (
-                      <UserAvatarProfile
-                        className='h-8 w-8 rounded-lg'
-                        showInfo
-                        user={user}
-                      />
-                    )}
-                  </div>
+                <div className='px-1 py-1.5 flex items-center gap-3'>
+          
+                <Avatar
+                  size={40}
+                  name={user?.name}
+                  variant="beam"
+                  colors={["#fb6900", "#f63700", "#004853", "#007e80", "#00b9bd"]}
+                />
+          
+              <div className="flex flex-col items-start">
+                <span className="font-medium text-sm">{user?.name}</span>
+                <span className="text-xs text-muted-foreground">{user?.email}</span>
+              </div>
+            </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
 
@@ -207,7 +220,8 @@ export default function AppSidebar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <IconLogout className='mr-2 h-4 w-4' />
-                  <SignOutButton redirectUrl='/auth/sign-in' />
+                  Sign Out
+                  {/* <SignOutButton redirectUrl='/auth/sign-in' /> */}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
