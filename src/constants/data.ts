@@ -32,10 +32,10 @@ export const navItems: NavItem[] = [
     items: [] // No child items
   },
   {
-    title: 'Managers',
-    url: '/dashboard/managers',
+    title: 'Profile',
+    url: '/dashboard/profile',
     icon: 'managers',
-    shortcut: ['m', 'm'],
+    shortcut: ['p', 'p'],
     isActive: false,
     items: [] // No child items
   },
