@@ -45,6 +45,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { Icons } from '../icons';
+import { logout } from '@/actions/auth';
 export const company = {
   name: 'Acme Inc',
   logo: IconPhotoUp,
@@ -59,6 +60,18 @@ export default function AppSidebar() {
   React.useEffect(() => {
     // Side effects based on sidebar state changes
   }, [isOpen]);
+
+   async function signOut() {
+    try {
+      const success = await logout();
+      if (success) {
+        router.push("/");
+      }
+    } catch (e) {
+      // Optionally handle error
+     console.error("Sign out error:", e);
+    }
+  }
 
   return (
     <Sidebar collapsible='icon'>
@@ -218,7 +231,9 @@ export default function AppSidebar() {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                 onClick={signOut}
+                >
                   <IconLogout className='mr-2 h-4 w-4' />
                   Sign Out
                   {/* <SignOutButton redirectUrl='/auth/sign-in' /> */}

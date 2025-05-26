@@ -12,13 +12,25 @@ import {
 import { useRouter } from 'next/navigation';
 import Avatar from 'boring-avatars';
 import { useUserStore } from '@/store/user'; 
+import { logout } from '@/actions/auth';
 
 export function UserNav() {
   const router = useRouter();
-  // Get user from zustand store
+  
   const user = useUserStore((state) => state.user);
 
-  if (!user) return null;
+    async function signOut() {
+     try {
+       const success = await logout();
+       if (success) {
+         router.push("/");
+       }
+     } catch (e) {
+       // Optionally handle error
+      console.error("Sign out error:", e);
+     }
+   }
+ 
 
   return (
     <DropdownMenu>
@@ -26,7 +38,7 @@ export function UserNav() {
         <Button variant='ghost' className='relative h-8 w-8 rounded-full p-0'>
           <Avatar
             size={48}
-            name={user.name}
+            name={user?.name}
             variant="beam"
             colors={["#fb6900", "#f63700", "#004853", "#007e80", "#00b9bd"]}
           />
@@ -41,10 +53,10 @@ export function UserNav() {
         <DropdownMenuLabel className='font-normal'>
           <div className='flex flex-col space-y-1'>
             <p className='text-sm leading-none font-medium'>
-              {user.name}
+              {user?.name}
             </p>
             <p className='text-muted-foreground text-xs leading-none'>
-              {user.email}
+              {user?.email}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -55,8 +67,10 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          Log Out
+              <DropdownMenuItem
+                       onClick={signOut}
+                      >
+          Log Out 
             {/* <SignOutButton redirectUrl='/auth/sign-in' /> */}
         </DropdownMenuItem>
       </DropdownMenuContent>
