@@ -27,7 +27,6 @@ export async function getCells(): Promise<Cell[]> {
       throw new Error(response?.detail || "Failed to fetch cells");
     }
 
-    console.log("response", response);
     return response;
   } catch (err) {
     throw new Error("Failed in fetching cells");

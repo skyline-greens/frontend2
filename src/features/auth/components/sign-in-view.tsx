@@ -54,13 +54,11 @@ export default function SignInViewPage() {
   });
   const submitHandler = async (data: TAuthSchema) => {
     try {
-      console.log("data", data);
       const response = await login(data);
 
       const accessToken = response["access"]
       const payload = JSON.parse(atob(accessToken.split(".")[1])) as TPayload
 
-      console.log("payload", payload);
       setUser(payload)
       toast.success("Login successful", {
         style: {

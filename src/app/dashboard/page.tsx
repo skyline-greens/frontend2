@@ -5,7 +5,6 @@ export default async function Dashboard() {
   // const { userId } = await auth();
     const auth = await getAuth();
 
-    console.log("auth", auth);
 
   if (!auth.isAuth) {
     return redirect('/auth/sign-in');

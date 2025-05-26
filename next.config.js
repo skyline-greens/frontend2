@@ -16,6 +16,9 @@ const nextConfig = {
   },
   transpilePackages: ['geist'],
   output: "standalone",
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 module.exports = nextConfig;

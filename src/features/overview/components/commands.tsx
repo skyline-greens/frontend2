@@ -86,7 +86,6 @@ export default function Commands({ cellId }: CommandsProps) {
         socket.on("metrics", metricHandler);
       }
     } catch (error) {
-      console.error('Error updating mode:', error);
       // Optionally add error handling UI feedback here
     } finally {
       setIsLoading(false);
@@ -115,9 +114,7 @@ export default function Commands({ cellId }: CommandsProps) {
         [commandType]: newValue
       }));
 
-      console.log(response.message); // "sent command successfully"
     } catch (error) {
-      console.error(`Error updating ${commandType}:`, error);
       // Revert the UI state in case of failure
     } finally {
       setActionInProgress(null);

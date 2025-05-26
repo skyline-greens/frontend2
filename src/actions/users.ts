@@ -69,8 +69,6 @@ export async function updateUser(id: string, data: UpdateUserDto) {
   try {
     const cookie = await cookies();
 
-    console.log("Updating user with data:", data);
-    console.log('dsdds',cookie.get('accessToken')?.value);
     const res = await fetch(`${base_url}/users/${id}/update-user`, {
       method:'POST',
       headers: {

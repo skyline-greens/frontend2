@@ -7,7 +7,6 @@ import { TAuthSchema } from "@/features/auth/components/sign-in-view";
 export async function login(data: TAuthSchema) {
     "use server";
     try {
-        console.log("data", data);
         const response = await fetch(`http://localhost:8000/auth/login`, {
             method: "POST",
             headers: {
@@ -54,10 +53,8 @@ export async function login(data: TAuthSchema) {
             maxAge: 1000 * 60 * 120, 
         });
 
-        console.log("Login successful");
         return { success: true, access: res.access };
     } catch (err) {
-        console.error("Login error:", err);
         throw new Error("couldn't login");
     }
 }
@@ -66,7 +63,6 @@ export async function register(data: TRegisterSchema) {
     "use server";
     try {
         const { confirmPassword, ...requestData } = data;
-        console.log("data", requestData);
         const response = await fetch(`http://localhost:8000/auth/register`, {
             method: "POST",
             headers: {
@@ -140,7 +136,6 @@ export async function refreshToken(): Promise<{ success: boolean; access?: strin
 
         return { success: true, access: res.accessToken };
     } catch (err) {
-        console.error("Refresh token error:", err);
         await logout();
         return { success: false };
     }
@@ -163,7 +158,6 @@ export async function logout(): Promise<boolean> {
                     credentials: 'include',
                 });
             } catch (err) {
-                console.error("Backend logout error:", err);
                 // Continue with local cleanup even if backend fails
             }
         }
@@ -175,7 +169,6 @@ export async function logout(): Promise<boolean> {
         
         return true;
     } catch (e) {
-        console.error("Logout error:", e);
         return false;
     }
 }
@@ -203,7 +196,6 @@ export async function getAuth(): Promise<{ isAuth: boolean; payload: TPayload | 
                 payload: claim.payload,
             };
         } catch (jwtError) {
-            console.log("JWT verification failed, attempting refresh...");
             
             // Try to refresh the token
             const refreshResult = await refreshToken();
@@ -231,7 +223,6 @@ export async function getAuth(): Promise<{ isAuth: boolean; payload: TPayload | 
             };
         }
     } catch (e) {
-        console.log("getAuth Error:", e);
         return {
             isAuth: false,
             payload: null,
