@@ -160,7 +160,7 @@ export default function Commands({ cellId }: CommandsProps) {
   };
 
   return (
-    <Card className='@container/card rounded-xl bg-white p-4 shadow-lg'>
+    <Card className='@container/card rounded-xl  p-4 shadow-lg'>
       <CardHeader>
         <CardTitle className='pt-2 text-2xl font-bold text-gray-800'>
           Commands
