@@ -133,7 +133,7 @@ export default function CO2AreaChart({ cellId }: { cellId: string }) {
   }
 
   return (
-    <Card className='h-full @container/card rounded-xl bg-white shadow-lg'>
+    <Card className='h-full @container/card rounded-xl  shadow-lg'>
       <CardHeader className='flex flex-col items-start justify-between border-b border-gray-100 p-6 sm:flex-row sm:items-center'>
         <div className='flex flex-col gap-2'>
           <CardTitle className='text-2xl font-bold text-gray-800'>
