@@ -11,6 +11,8 @@ export type Product = {
   updated_at: string;
 };
 
+export const ADMIN = "admin";
+
 //Info: The following data is used for the sidebar navigation and Cmd K bar.
 export const navItems: NavItem[] = [
   {
