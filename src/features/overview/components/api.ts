@@ -42,6 +42,13 @@ interface FetchMetricsParams {
   baseUrl?: string; // Optional, defaults to localhost
 }
 
+// Define a common return type for your API functions
+type ApiResponse<T> = {
+  success: boolean;
+  error: string | null;
+  data: T | null;
+};
+
 export const fetchMetrics = async ({
   cellId,
   timeRange,
@@ -49,7 +56,7 @@ export const fetchMetrics = async ({
   selectedMonth,
   selectedDay,
   baseUrl = BACKEND_URL,
-}: FetchMetricsParams) => {
+}: FetchMetricsParams): Promise<ApiResponse<Metric[]>> => {
   console.log(cellId)
   try {
     const queryParams: QueryMetricsDto = {
@@ -66,7 +73,7 @@ export const fetchMetrics = async ({
     // Build query string from defined parameters
     const queryString = Object.entries(queryParams)
       .filter(([_, value]) => value !== undefined)
-      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+      .map(([key, value]) => `${key}=${encodeURIComponent(value as string)}`) // Added 'as string' for type safety
       .join('&');
     console.log(baseUrl);
     const url = `${baseUrl}/cells/${cellId}/metrics${queryString ? `?${queryString}` : ''}`;
@@ -77,18 +84,22 @@ export const fetchMetrics = async ({
       }
     });
     if (!response.ok) {
-      const b = await response.json();
-      return { success: false, error: JSON.stringify(b), data: null };
+      const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+      return { success: false, error: JSON.stringify(errorData), data: null };
     }
     const data: Metric[] = await response.json();
     const parsedData = data.map(metric => {
       let date = '';
       if (timeRange === 'year') {
-        date = `${selectedYear}-${(metric.month?.toString() || '00').padStart(2, '0')}-01`;
+        date = `${selectedYear}-${(metric.month?.toString() || '01').padStart(2, '0')}-01`; // Default month to '01'
       } else if (timeRange === 'month') {
-        date = `${selectedYear}-${selectedMonth?.toString().padStart(2, '0')}-${(metric.day || 0).toString().padStart(2, '0')}`;
+        // Ensure selectedMonth is a string for padStart
+        const monthStr = typeof selectedMonth === 'number' ? selectedMonth.toString() : selectedMonth || '01';
+        date = `${selectedYear}-${monthStr.padStart(2, '0')}-${(metric.day?.toString() || '01').padStart(2, '0')}`; // Default day to '01'
       } else {
-        date = `${selectedYear}-${selectedMonth?.toString().padStart(2, '0')}-${selectedDay?.toString().padStart(2, '0')}T${(metric.hour || 0).toString().padStart(2, '0')}:00:00`;
+        const monthStr = typeof selectedMonth === 'number' ? selectedMonth.toString() : selectedMonth || '01';
+        const dayStr = typeof selectedDay === 'number' ? selectedDay.toString() : selectedDay || '01';
+        date = `${selectedYear}-${monthStr.padStart(2, '0')}-${dayStr.padStart(2, '0')}T${(metric.hour?.toString() || '00').padStart(2, '0')}:00:00`; // Default hour to '00'
       }
       return {
         ...metric,
@@ -98,14 +109,17 @@ export const fetchMetrics = async ({
     return { success: true, error: null, data: parsedData };
   } catch (error) {
     console.error('Error fetching metrics:', error);
-    return { success: false, error: error.message, data: null };
+    if (error instanceof Error) {
+      return { success: false, error: error.message, data: null };
+    }
+    return { success: false, error: 'An unknown error occurred', data: null };
   }
 };
 
 /**
  * Fetches the current mode (Manual or Automatic) for a specific cell
  */
-export const fetchCellMode = async (cellId: string, baseUrl = BACKEND_URL) => {
+export const fetchCellMode = async (cellId: string, baseUrl = BACKEND_URL): Promise<ApiResponse<string>> => {
   try {
     const cookieStore = await cookies();
     const response = await fetch(`${baseUrl}/cells/${cellId}/mode`, {
@@ -115,11 +129,11 @@ export const fetchCellMode = async (cellId: string, baseUrl = BACKEND_URL) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Failed to fetch mode' }));
-      return { 
-        success: false, 
-        error: errorData.message || 'Failed to fetch mode', 
-        data: null 
+      const errorData = await response.json().catch(() => ({ message: 'Failed to fetch mode or parse error JSON' }));
+      return {
+        success: false,
+        error: (errorData && typeof errorData.message === 'string' ? errorData.message : 'Failed to fetch mode'),
+        data: null
       };
     }
 
@@ -128,7 +142,10 @@ export const fetchCellMode = async (cellId: string, baseUrl = BACKEND_URL) => {
     return { success: true, error: null, data: mode };
   } catch (error) {
     console.error('Error fetching mode:', error);
-    return { success: false, error: error.message, data: null };
+    if (error instanceof Error) {
+      return { success: false, error: error.message, data: null };
+    }
+    return { success: false, error: 'An unknown error occurred while fetching mode', data: null };
   }
 };
 
@@ -136,10 +153,10 @@ export const fetchCellMode = async (cellId: string, baseUrl = BACKEND_URL) => {
  * Updates the operating mode (Manual or Automatic) for a specific cell
  */
 export const updateCellMode = async (
-  cellId: string, 
+  cellId: string,
   newMode: 'Manual' | 'Automatic',
   baseUrl = BACKEND_URL
-) => {
+): Promise<ApiResponse<any>> => { // Consider defining a more specific type for responseData if possible
   try {
     const cookieStore = await cookies();
     const response = await fetch(`${baseUrl}/cells/${cellId}/mode`, {
@@ -154,11 +171,11 @@ export const updateCellMode = async (
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Failed to update mode' }));
-      return { 
-        success: false, 
-        error: errorData.message || 'Failed to update mode', 
-        data: null 
+      const errorData = await response.json().catch(() => ({ message: 'Failed to update mode or parse error JSON' }));
+      return {
+        success: false,
+        error: (errorData && typeof errorData.message === 'string' ? errorData.message : 'Failed to update mode'),
+        data: null
       };
     }
 
@@ -166,7 +183,10 @@ export const updateCellMode = async (
     return { success: true, error: null, data: responseData };
   } catch (error) {
     console.error('Error updating mode:', error);
-    return { success: false, error: error.message, data: null };
+    if (error instanceof Error) {
+      return { success: false, error: error.message, data: null };
+    }
+    return { success: false, error: 'An unknown error occurred while updating mode', data: null };
   }
 };
 
@@ -174,10 +194,10 @@ export const updateCellMode = async (
  * Sends a command to control actuators for a specific cell
  */
 export const sendCellCommand = async (
-  cellId: string, 
+  cellId: string,
   command: CommandDto,
   baseUrl = BACKEND_URL
-) => {
+): Promise<ApiResponse<any>> => { // Consider defining a more specific type for responseData if possible
   try {
     const cookieStore = await cookies();
     const response = await fetch(`${baseUrl}/cells/${cellId}/command`, {
@@ -190,11 +210,11 @@ export const sendCellCommand = async (
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Failed to send command' }));
-      return { 
-        success: false, 
-        error: errorData.message || 'Failed to send command', 
-        data: null 
+      const errorData = await response.json().catch(() => ({ message: 'Failed to send command or parse error JSON' }));
+      return {
+        success: false,
+        error: (errorData && typeof errorData.message === 'string' ? errorData.message : 'Failed to send command'),
+        data: null
       };
     }
 
@@ -202,6 +222,9 @@ export const sendCellCommand = async (
     return { success: true, error: null, data: responseData };
   } catch (error) {
     console.error('Error sending command:', error);
-    return { success: false, error: error.message, data: null };
+    if (error instanceof Error) {
+      return { success: false, error: error.message, data: null };
+    }
+    return { success: false, error: 'An unknown error occurred while sending command', data: null };
   }
 };
