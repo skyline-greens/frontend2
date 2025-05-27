@@ -65,7 +65,7 @@ export default function AppSidebar() {
     try {
       const success = await logout();
       if (success) {
-        router.push("/");
+        router.push("/auth/sign-in");
       }
     } catch (e) {
       // Optionally handle error

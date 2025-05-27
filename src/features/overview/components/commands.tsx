@@ -52,7 +52,7 @@ export default function Commands({ cellId }: CommandsProps) {
         const result = await fetchCellMode(cellId);
         if (result.success && result.data) {
           const newMode = result.data;
-          setMode(newMode.toLowerCase() == "manual" ? "Manual" : "Automatic");
+          setMode(newMode.toLowerCase() == "manual" ? "Manual" :"Automatic");
 
           if (newMode === "Automatic") {
             socket.on("metrics", metricHandler);

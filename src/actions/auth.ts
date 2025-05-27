@@ -48,7 +48,7 @@ export async function login(data: TAuthSchema) {
     cookieStore.set({
       name: "accessToken",
       value: res.access,
-      httpOnly: true,
+      httpOnly: false,
       sameSite: "strict",
       secure: process.env.NODE_ENV === 'production',
       maxAge: 1000 * 60 * 120, 
@@ -120,7 +120,7 @@ export async function refreshToken(): Promise<{ success: boolean; access?: strin
     cookieStore.set({
       name: "accessToken",
       value: res.accessToken,
-      httpOnly: true,
+      httpOnly: false,
       sameSite: "strict",
       secure: process.env.NODE_ENV === 'production',
       maxAge: 1000 * 60 * 120,

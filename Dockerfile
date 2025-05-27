@@ -1,4 +1,4 @@
-FROM node:24-alpine3.20 AS base
+FROM node:20-alpine3.20 AS base
 
 RUN corepack enable pnpm
 

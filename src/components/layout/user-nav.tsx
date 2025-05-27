@@ -23,7 +23,7 @@ export function UserNav() {
      try {
        const success = await logout();
        if (success) {
-         router.push("/");
+         router.push("/auth/sign-in");
        }
      } catch (e) {
        // Optionally handle error
