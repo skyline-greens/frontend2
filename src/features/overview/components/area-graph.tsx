@@ -29,8 +29,17 @@ import { Button } from '@/components/ui/button';
 import { fetchMetrics, Metric } from './api';
 import { socket } from '@/socket';
 import { appendWithMaxLength } from '@/helpers/general';
-import { BACKEND_URL } from '@/constants/api';
 
+interface CellMetric {
+  temperature?: number;
+  humidity?: number;
+  lightIntensity?: number;
+  moisture?: number;
+  co2?: number;
+  airPump?: number;
+  waterPump?: number;
+  light?: number;
+}
 
 export default function CO2AreaChart({ cellId }: { cellId: string }) {
   const [timeRange, setTimeRange] = useState<'day' | 'month' | 'year'>('month');
@@ -40,6 +49,7 @@ export default function CO2AreaChart({ cellId }: { cellId: string }) {
   const [data, setData] = useState<Metric[]>([]);
   const [realtimeMode, setRealtimeMode] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -47,32 +57,49 @@ export default function CO2AreaChart({ cellId }: { cellId: string }) {
 
   useEffect(() => {
     if (!realtimeMode) {
-      fetchMetrics({
-        cellId: cellId,
-        timeRange: timeRange,
-        selectedYear: selectedYear,
-        selectedMonth: selectedMonth,
-        selectedDay: selectedDay,
-        setData,
-        baseUrl: BACKEND_URL,
-      });
+      const loadData = async () => {
+        try {
+          setIsLoading(true);
+          const result = await fetchMetrics({
+            cellId: cellId,
+            timeRange: timeRange,
+            selectedYear: selectedYear,
+            selectedMonth: selectedMonth,
+            selectedDay: selectedDay,
+          });
+          
+          if (result.success && result.data) {
+            setData(result.data);
+          } else {
+            console.error('Failed to fetch metrics:', result.error);
+            setData([]);
+          }
+        } catch (error) {
+          console.error('Error loading data:', error);
+          setData([]);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      loadData();
     } else {
-      const metricHandler = (metric: any) => {
+      const metricHandler = (metric: CellMetric) => {
         setData((old) => appendWithMaxLength(old, {
           ...metric,
-          air: metric.airPump == 1, 
-          water: metric.waterPump == 1,
-          light: metric.light == 1,
+          air: metric.airPump === 1, 
+          water: metric.waterPump === 1,
+          light: metric.light === 1,
           cellId,
-          date: new Date().toString(),
+          date: new Date().toISOString(),
         }));
-      }
+      };
 
       socket.on("metrics", metricHandler);
       return () => {
         socket.off("metrics", metricHandler);
         setData([]);
-      }
+      };
     }
   }, [cellId, timeRange, selectedYear, selectedMonth, selectedDay, realtimeMode]);
 
@@ -134,7 +161,7 @@ export default function CO2AreaChart({ cellId }: { cellId: string }) {
   }
 
   return (
-    <Card className='h-full @container/card rounded-xl  shadow-lg'>
+    <Card className='h-full @container/card rounded-xl shadow-lg'>
       <CardHeader className='flex flex-col items-start justify-between border-b border-gray-100 p-6 sm:flex-row sm:items-center'>
         <div className='flex flex-col gap-2'>
           <CardTitle className='text-2xl font-bold text-gray-800'>
@@ -225,7 +252,11 @@ export default function CO2AreaChart({ cellId }: { cellId: string }) {
 
         <div className='h-[300px]'>
           <ResponsiveContainer width='100%' height='100%'>
-            {data.length === 0 ? (
+            {isLoading ? (
+              <div className='flex h-full items-center justify-center'>
+                <p className='text-2xl font-bold text-gray-800'>Loading...</p>
+              </div>
+            ) : data.length === 0 ? (
               <div className='flex h-full items-center justify-center'>
                 <p className='text-2xl font-bold text-gray-800'>No Data</p>
               </div>

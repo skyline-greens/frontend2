@@ -1,6 +1,7 @@
-import { Dispatch, SetStateAction } from 'react';
+"use server";
 import { CommandDto } from '@/dto/command.dto';
 import { BACKEND_URL } from '@/constants/api';
+import { cookies } from 'next/headers';
 
 // Provided types
 export interface Metric {
@@ -38,7 +39,6 @@ interface FetchMetricsParams {
   selectedYear: number | string;
   selectedMonth?: number | string;
   selectedDay?: number | string;
-  setData: Dispatch<SetStateAction<any[]>>;
   baseUrl?: string; // Optional, defaults to localhost
 }
 
@@ -48,9 +48,9 @@ export const fetchMetrics = async ({
   selectedYear,
   selectedMonth,
   selectedDay,
-  setData,
   baseUrl = BACKEND_URL,
 }: FetchMetricsParams) => {
+  console.log(cellId)
   try {
     const queryParams: QueryMetricsDto = {
       scope: timeRange,
@@ -68,11 +68,17 @@ export const fetchMetrics = async ({
       .filter(([_, value]) => value !== undefined)
       .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
       .join('&');
+    console.log(baseUrl);
     const url = `${baseUrl}/cells/${cellId}/metrics${queryString ? `?${queryString}` : ''}`;
-    const response = await fetch(url);
+    const cookieStore = await cookies();
+    const response = await fetch(url, {
+      headers: {
+        "Authorization": `Bearer ${cookieStore.get("accessToken")?.value}`
+      }
+    });
     if (!response.ok) {
       const b = await response.json();
-      throw new Error(JSON.stringify(b));
+      return { success: false, error: JSON.stringify(b), data: null };
     }
     const data: Metric[] = await response.json();
     const parsedData = data.map(metric => {
@@ -89,30 +95,40 @@ export const fetchMetrics = async ({
         date,
       };
     });
-    setData(parsedData);
+    return { success: true, error: null, data: parsedData };
   } catch (error) {
     console.error('Error fetching metrics:', error);
+    return { success: false, error: error.message, data: null };
   }
 };
-
-// Newly extracted API functions from Commands component
 
 /**
  * Fetches the current mode (Manual or Automatic) for a specific cell
  */
 export const fetchCellMode = async (cellId: string, baseUrl = BACKEND_URL) => {
   try {
-    const response = await fetch(`${baseUrl}/cells/${cellId}/mode`);
+    const cookieStore = await cookies();
+    const response = await fetch(`${baseUrl}/cells/${cellId}/mode`, {
+      headers: {
+        "Authorization": `Bearer ${cookieStore.get("accessToken")?.value}`
+      }
+    });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch mode');
+      const errorData = await response.json().catch(() => ({ message: 'Failed to fetch mode' }));
+      return { 
+        success: false, 
+        error: errorData.message || 'Failed to fetch mode', 
+        data: null 
+      };
     }
 
     const data = await response.json();
-    return data.mode === 'manual' ? 'Manual' : 'Automatic';
+    const mode = data.mode === 'manual' ? 'Manual' : 'Automatic';
+    return { success: true, error: null, data: mode };
   } catch (error) {
     console.error('Error fetching mode:', error);
-    throw error;
+    return { success: false, error: error.message, data: null };
   }
 };
 
@@ -125,9 +141,11 @@ export const updateCellMode = async (
   baseUrl = BACKEND_URL
 ) => {
   try {
+    const cookieStore = await cookies();
     const response = await fetch(`${baseUrl}/cells/${cellId}/mode`, {
       method: 'POST',
       headers: {
+        "Authorization": `Bearer ${cookieStore.get("accessToken")?.value}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -136,13 +154,19 @@ export const updateCellMode = async (
     });
 
     if (!response.ok) {
-      throw new Error('Failed to update mode');
+      const errorData = await response.json().catch(() => ({ message: 'Failed to update mode' }));
+      return { 
+        success: false, 
+        error: errorData.message || 'Failed to update mode', 
+        data: null 
+      };
     }
 
-    return await response.json();
+    const responseData = await response.json();
+    return { success: true, error: null, data: responseData };
   } catch (error) {
     console.error('Error updating mode:', error);
-    throw error;
+    return { success: false, error: error.message, data: null };
   }
 };
 
@@ -155,21 +179,29 @@ export const sendCellCommand = async (
   baseUrl = BACKEND_URL
 ) => {
   try {
+    const cookieStore = await cookies();
     const response = await fetch(`${baseUrl}/cells/${cellId}/command`, {
       method: 'POST',
       headers: {
+        "Authorization": `Bearer ${cookieStore.get("accessToken")?.value}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(command),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to send command');
+      const errorData = await response.json().catch(() => ({ message: 'Failed to send command' }));
+      return { 
+        success: false, 
+        error: errorData.message || 'Failed to send command', 
+        data: null 
+      };
     }
 
-    return await response.json();
+    const responseData = await response.json();
+    return { success: true, error: null, data: responseData };
   } catch (error) {
     console.error('Error sending command:', error);
-    throw error;
+    return { success: false, error: error.message, data: null };
   }
 };
