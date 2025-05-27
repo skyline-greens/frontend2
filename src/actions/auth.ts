@@ -194,7 +194,7 @@ export async function getAuth(): Promise<{ isAuth: boolean; payload: TPayload | 
     }
 
     // Use the correct JWT secret (should match your NestJS ACCESS_JWT_SECRET)
-    const jwtKey = process.env.ACCESS_JWT_SECRET ?? "greens-secret";
+    const jwtKey = process.env.ACCESS_JWT_SECRET ?? "verdant-secret";
 
     try {
       const claim = await jwtVerify<TPayload>(token, new TextEncoder().encode(jwtKey));
