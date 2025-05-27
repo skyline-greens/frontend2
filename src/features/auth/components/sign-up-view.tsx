@@ -26,10 +26,7 @@ import { PasswordInput } from '@/components/ui/password-input'
 import { PhoneInput } from '@/components/ui/phone-input'
 import Link from 'next/link'
 import Image from 'next/image';
-export const metadata: Metadata = {
-  title: 'Authentication',
-  description: 'Authentication forms built using the components.'
-};
+
 
 export const registerSchema =  z
   .object({
