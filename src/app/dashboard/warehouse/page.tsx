@@ -19,7 +19,7 @@ type pageProps = {
 };
 
 export default async function Page(props: pageProps) {
-  let warehousesStats: any[] = [];
+  let warehousesStats: any = {};
       try {
         warehousesStats = await getWarehousesStats();
       } catch (err) {
