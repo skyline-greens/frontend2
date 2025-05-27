@@ -21,62 +21,64 @@ export type Product = {
 };
 
 // Mock product data store
-export const fakeProducts = {
-  records: [] as Product[], // Holds the list of product objects
+export const ManageTables = {
+  // records: [] as Product[], // Holds the list of product objects
 
   // Initialize with sample data
-  initialize() {
-    const sampleProducts: Product[] = [];
-    function generateRandomProductData(id: number): Product {
-      const categories = [
-        'Electronics',
-        'Furniture',
-        'Clothing',
-        'Toys',
-        'Groceries',
-        'Books',
-        'Jewelry',
-        'Beauty Products'
-      ];
+  // initialize() {
+  //   const sampleProducts: Product[] = [];
+  //   function generateRandomProductData(id: number): Product {
+  //     const categories = [
+  //       'Electronics',
+  //       'Furniture',
+  //       'Clothing',
+  //       'Toys',
+  //       'Groceries',
+  //       'Books',
+  //       'Jewelry',
+  //       'Beauty Products'
+  //     ];
 
-      return {
-        id,
-        name: faker.commerce.productName(),
-        description: faker.commerce.productDescription(),
-        created_at: faker.date
-          .between({ from: '2022-01-01', to: '2023-12-31' })
-          .toISOString(),
-        price: parseFloat(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
-        photo_url: `https://api.slingacademy.com/public/sample-products/${id}.png`,
-        category: faker.helpers.arrayElement(categories),
-        updated_at: faker.date.recent().toISOString()
-      };
-    }
+  //     return {
+  //       id,
+  //       name: faker.commerce.productName(),
+  //       description: faker.commerce.productDescription(),
+  //       created_at: faker.date
+  //         .between({ from: '2022-01-01', to: '2023-12-31' })
+  //         .toISOString(),
+  //       price: parseFloat(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
+  //       photo_url: `https://api.slingacademy.com/public/sample-products/${id}.png`,
+  //       category: faker.helpers.arrayElement(categories),
+  //       updated_at: faker.date.recent().toISOString()
+  //     };
+  //   }
 
-    // Generate remaining records
-    for (let i = 1; i <= 20; i++) {
-      sampleProducts.push(generateRandomProductData(i));
-    }
+  //   // Generate remaining records
+  //   for (let i = 1; i <= 20; i++) {
+  //     sampleProducts.push(generateRandomProductData(i));
+  //   }
 
-    this.records = sampleProducts;
-  },
+  //   this.records = sampleProducts;
+  // },
 
   // Get all products with optional category filtering and search
-  async getAll({
-    categories = [],
-    search
+  async getAllWarehouses({
+    // categories = [],
+    search,
+    data
   }: {
-    categories?: string[];
+    // categories?: string[];
     search?: string;
+    data?:any;
   }) {
-    let products = [...this.records];
+    let products = data;
 
     // Filter products based on selected categories
-    if (categories.length > 0) {
-      products = products.filter((product) =>
-        categories.includes(product.category)
-      );
-    }
+    // if (categories.length > 0) {
+    //   products = products.filter((product) =>
+    //     categories.includes(product.category)
+    //   );
+    // }
 
     // Search functionality across multiple fields
     if (search) {
@@ -85,73 +87,82 @@ export const fakeProducts = {
       });
     }
 
+    console.log('Filtered products jkldshjhjds :', products);
+
     return products;
   },
 
   // Get paginated results with optional category filtering and search
-  async getProducts({
+  async getWarehouses({
     page = 1,
     limit = 10,
-    categories,
-    search
+    // categories,
+    search,
+    data
   }: {
     page?: number;
     limit?: number;
-    categories?: string;
+    // categories?: string;
     search?: string;
+    data?:any;
   }) {
     await delay(1000);
-    const categoriesArray = categories ? categories.split('.') : [];
-    const allProducts = await this.getAll({
-      categories: categoriesArray,
-      search
+    // const categoriesArray = categories ? categories.split('.') : [];
+    const allWarehouses = await this.getAllWarehouses({
+      // categories: categoriesArray,
+      search,
+      data
     });
-    const totalProducts = allProducts.length;
+    const totalWarehouses = allWarehouses.length;
 
     // Pagination logic
     const offset = (page - 1) * limit;
-    const paginatedProducts = allProducts.slice(offset, offset + limit);
+    const paginatedWarehouses = allWarehouses.slice(offset, offset + limit);
 
     // Mock current time
     const currentTime = new Date().toISOString();
+
+
+
+    console.log('Paginated Warehouses:', paginatedWarehouses);
 
     // Return paginated response
     return {
       success: true,
       time: currentTime,
       message: 'Sample data for testing and learning purposes',
-      total_products: totalProducts,
+      total_warehouses: totalWarehouses,
       offset,
       limit,
-      products: paginatedProducts
+      warehouses: paginatedWarehouses
     };
   },
 
   // Get a specific product by its ID
-  async getProductById(id: number) {
-    await delay(1000); // Simulate a delay
+  // async getProductById(id: number) {
+  //   await delay(1000); // Simulate a delay
 
-    // Find the product by its ID
-    const product = this.records.find((product) => product.id === id);
+  //   // Find the product by its ID
+  //   const product = this.records.find((product) => product.id === id);
 
-    if (!product) {
-      return {
-        success: false,
-        message: `Product with ID ${id} not found`
-      };
-    }
+  //   if (!product) {
+  //     return {
+  //       success: false,
+  //       message: `Product with ID ${id} not found`
+  //     };
+  //   }
 
-    // Mock current time
-    const currentTime = new Date().toISOString();
+  //   // Mock current time
+  //   const currentTime = new Date().toISOString();
 
-    return {
-      success: true,
-      time: currentTime,
-      message: `Product with ID ${id} found`,
-      product
-    };
-  }
+  //   return {
+  //     success: true,
+  //     time: currentTime,
+  //     message: `Product with ID ${id} found`,
+  //     product
+  //   };
+  // }
 };
 
 // Initialize sample products
-fakeProducts.initialize();
+// fakeProducts.initialize();
