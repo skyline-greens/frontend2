@@ -37,7 +37,7 @@ export async function login(data: TAuthSchema) {
           value: refreshTokenMatch[1],
           httpOnly: true,
           sameSite: "strict",
-          secure: process.env.NODE_ENV === 'production',
+          // secure: process.env.NODE_ENV === 'production',
           maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         });
       }
@@ -50,7 +50,7 @@ export async function login(data: TAuthSchema) {
       value: res.access,
       httpOnly: false,
       sameSite: "strict",
-      secure: process.env.NODE_ENV === 'production',
+      // secure: process.env.NODE_ENV === 'production',
       maxAge: 1000 * 60 * 120, 
     });
 
@@ -122,7 +122,7 @@ export async function refreshToken(): Promise<{ success: boolean; access?: strin
       value: res.accessToken,
       httpOnly: false,
       sameSite: "strict",
-      secure: process.env.NODE_ENV === 'production',
+      // secure: process.env.NODE_ENV === 'production',
       maxAge: 1000 * 60 * 120,
     });
 
@@ -136,7 +136,7 @@ export async function refreshToken(): Promise<{ success: boolean; access?: strin
           value: refreshTokenMatch[1],
           httpOnly: true,
           sameSite: "strict",
-          secure: process.env.NODE_ENV === 'production',
+          // secure: process.env.NODE_ENV === 'production',
           maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         });
       }
