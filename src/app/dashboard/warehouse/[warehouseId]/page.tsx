@@ -8,11 +8,11 @@ import { getCellsByWarehouseId } from '@/actions/cells';
 import CellSelect from '@/features/warehouses/components/cell-select';
 
 type PageProps = {
-  params: { warehouseId: string };
+  params: Promise<{ warehouseId: string }>;
 };
 
 export default async function Page({ params }: PageProps) {
-  const { warehouseId } = params;
+  const { warehouseId } = await params;
   const cells = await getCellsByWarehouseId(warehouseId);
 
   return (

@@ -23,13 +23,11 @@ export default function OverViewLayout({
   sales,
   pie_stats,
   bar_stats,
-  area_stats,
   params,
 }: {
   sales: React.ReactNode;
   pie_stats: React.ReactNode;
   bar_stats: React.ReactNode;
-  area_stats: React.ReactNode;
   params: { cellId: string };
 }) {
   const { cellId } = params;

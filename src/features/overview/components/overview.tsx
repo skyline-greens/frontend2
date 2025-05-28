@@ -26,7 +26,6 @@ export default function OverViewLayout({
   sales: React.ReactNode;
   pie_stats: React.ReactNode;
   bar_stats: React.ReactNode;
-  area_stats: React.ReactNode;
 }) {
   return (
     <PageContainer>
