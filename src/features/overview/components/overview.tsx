@@ -134,10 +134,10 @@ export default function OverViewLayout({
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7'>
           <div className='col-span-10'>{bar_stats}</div>
           <div className='col-span-10 mt-4 rounded-xl bg-[var(--card)] shadow-xs'>
-            <Commands cellId={CELL_ID} />
+            <Commands cellId={CELL_ID!} />
           </div>
           <div className='col-span-10 mt-4 rounded-xl bg-[var(--card)] shadow-xs'>
-            <CO2AreaChart cellId={CELL_ID} />
+            <CO2AreaChart cellId={CELL_ID!} />
           </div>
         </div>
       </div>
