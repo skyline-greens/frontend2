@@ -1,4 +1,3 @@
-import { Product } from '@/constants/data';
 import { ManageTables } from '@/constants/mock-api';
 import { searchParamsCache } from '@/lib/searchparams';
 import { WarehouseTable } from './warehouses-tables';

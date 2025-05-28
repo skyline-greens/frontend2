@@ -29,6 +29,9 @@ export function WarehouseTable<TData, TValue>({
     debounceMs: 500
   });
 
+
+  console.log('WarehouseTable data:', data);
+
   return (
     <DataTable table={table}>
       <DataTableToolbar table={table} />
