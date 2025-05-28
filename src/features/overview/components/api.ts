@@ -57,7 +57,6 @@ export const fetchMetrics = async ({
   selectedDay,
   baseUrl = BACKEND_URL,
 }: FetchMetricsParams): Promise<ApiResponse<Metric[]>> => {
-  console.log(cellId)
   try {
     const queryParams: QueryMetricsDto = {
       scope: timeRange,

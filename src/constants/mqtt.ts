@@ -1,2 +1,2 @@
 
-export const CELL_ID = '5e8e7ba9-c26e-4044-b47b-8092ffa93433'
+export const CELL_ID = process.env.CELL_ID || localStorage.getItem("CELL_ID");
