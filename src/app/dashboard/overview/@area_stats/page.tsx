@@ -4,5 +4,5 @@ import CO2AreaChart from '@/features/overview/components/area-graph';
 
 export default async function AreaStats() {
   await await delay(2000);
-  return <CO2AreaChart cellId={CELL_ID} />;
+  return <CO2AreaChart cellId={CELL_ID!} />;
 }
