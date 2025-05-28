@@ -1,4 +1,5 @@
 import {
+  IconHome,
   IconUsers,
   IconLogout,
   IconCalendar,
@@ -40,6 +41,7 @@ import {
 export type Icon = React.ComponentType<IconProps>;
 
 export const Icons = {
+  warehouse:IconHome,
   dashboard: IconLayoutDashboard,
   logo: IconCommand,
   login: IconLogin,
