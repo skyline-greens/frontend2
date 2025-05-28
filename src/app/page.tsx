@@ -808,9 +808,9 @@ export default function LandingPage() {
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/25">
+              <Link href='/auth/sign-in'  className="bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/25">
                 Get Started
-              </Button>
+              </Link>
             </motion.div>
           </div>
         </motion.header>

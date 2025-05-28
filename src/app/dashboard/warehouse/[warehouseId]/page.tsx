@@ -1,64 +1,42 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
+import TemperatureLineChart from '@/features/warehouses/components/wh-line-graph';
+import HumidityLineChart from '@/features/warehouses/components/wh-humidity';
+import ConsumptionLineChart from '@/features/warehouses/components/consumption-graph';
+import { getCellsByWarehouseId } from '@/actions/cells';
+import CellSelect from '@/features/warehouses/components/cell-select';
 
-import { searchParamsCache } from '@/lib/searchparams';
-
-import { SearchParams } from 'nuqs/server';
-
-import ProductListingPage from '@/features/warehouses/components/product-listing';
-import { getWarehouses, Warehouse } from '@/actions/warehouse';
-import LineChart from '@/features/warehouses/components/chart';
-import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
-import { Suspense } from 'react';
-
-
-type pageProps = {
-  searchParams: Promise<SearchParams>;
+type PageProps = {
   params: { warehouseId: string };
 };
 
-export default async function Page(props: pageProps) {
-  const searchParams = await props.searchParams;
-  const { warehouseId } = props.params;
-  searchParamsCache.parse(searchParams);
-  
-  let warehouses: Warehouse[] = [];
-  try {
-    warehouses = await getWarehouses();
-    console.log('fendi:', warehouses);
-  } catch (err) {
-    console.error("Failed to fetch warehouses data:", err);
-   
-  }
-  // This key is used for invoke suspense if any of the search params changed (used for filters).
-  // const key = serialize({ ...searchParams });
-
+export default async function Page({ params }: PageProps) {
+  const { warehouseId } = params;
+  const cells = await getCellsByWarehouseId(warehouseId);
 
   return (
-    <PageContainer scrollable={false}>
+    <PageContainer scrollable={true}>
       <div className='flex flex-1 flex-col space-y-4'>
         <div className='flex items-start justify-between'>
           <Heading
-            title='Warehouse'
-            description='Manage Warehouse in your agriculture system'
+            title={`Warehouse ${warehouseId}`}
+            description={`Manage Warehouse ${warehouseId} in your agriculture system`}
           />
         </div>
         <Separator />
-   
-        <Suspense
-                  fallback={
-                    <DataTableSkeleton columnCount={5} rowCount={8} filterCount={2} />
-                  }
-                >
-                  <ProductListingPage data={warehouses}  />
-                </Suspense>              
-                 
-        <LineChart warehouseId={warehouseId} />
 
+        <CellSelect warehouseId={warehouseId} cells={cells} />
 
-        
-
+        <ConsumptionLineChart warehouseId={warehouseId} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white p-4 rounded-lg shadow">
+            <HumidityLineChart warehouseId={warehouseId} />
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <TemperatureLineChart warehouseId={warehouseId} />
+          </div>
+        </div>
       </div>
     </PageContainer>
   );

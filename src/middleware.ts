@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from /auth pages
   if (pathname.startsWith("/auth") && auth.isAuth) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   // Redirect unauthenticated users trying to access /dashboard or its subroutes

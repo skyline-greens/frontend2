@@ -34,6 +34,9 @@ export async function getCells(): Promise<Cell[]> {
   }
 }
 
+
+
+
 export async function getCellById(id: string): Promise<Cell> {
   'use server'
   try {
@@ -117,5 +120,25 @@ export async function deleteCell(id: string) {
     return;
   } catch (err) {
     throw new Error("Failed when deleting cell");
+  }
+}
+
+export async function getCellsByWarehouseId(warehouseId: string): Promise<Cell[]> {
+  'use server'
+  try {
+    const cookie = await cookies();
+    const res = await fetch(`${base_url}/cells/warehouse/${warehouseId}`, {
+      headers: {
+        Authorization: `Bearer ${cookie.get('accessToken')?.value}`
+      },
+      credentials: "include"
+    });
+    const response = await res.json();
+    if (!res.ok) {
+      throw new Error(response?.detail || "Failed to fetch cells");
+    }
+    return response;
+  } catch (err) {
+    throw new Error("Failed in fetching cells");
   }
 }
