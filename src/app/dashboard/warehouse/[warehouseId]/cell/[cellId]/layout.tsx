@@ -18,17 +18,23 @@ import {
   CloudIcon
 } from 'lucide-react';
 import CO2AreaChart from '@/features/overview/components/area-graph';
+
 export default function OverViewLayout({
   sales,
   pie_stats,
   bar_stats,
-  area_stats
+  area_stats,
+  params,
 }: {
   sales: React.ReactNode;
   pie_stats: React.ReactNode;
   bar_stats: React.ReactNode;
   area_stats: React.ReactNode;
+  params: { cellId: string };
 }) {
+  const { cellId } = params;
+
+  console.log('Cell ID:', cellId);
   return (
     <PageContainer>
       <div className='flex flex-1 flex-col pb-6'>
@@ -39,6 +45,7 @@ export default function OverViewLayout({
         </div>
 
         <div className='*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card mb-8 grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4'>
+    
           <Card className='@container/card h-32'>
             <CardHeader className='flex h-36 items-center justify-center'>
               <div className='mr-2 flex h-14 w-14 items-center justify-center rounded-lg border border-green-500 bg-green-100'>
@@ -128,10 +135,10 @@ export default function OverViewLayout({
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7'>
           <div className='col-span-10'>{bar_stats}</div>
           <div className='col-span-10 mt-4 rounded-xl bg-[var(--card)] shadow-xs'>
-            <Commands />
+            <Commands cellId={cellId} />
           </div>
           <div className='col-span-10 mt-4 rounded-xl bg-[var(--card)] shadow-xs'>
-            <CO2AreaChart />
+            <CO2AreaChart cellId={cellId} />
           </div>
         </div>
       </div>
