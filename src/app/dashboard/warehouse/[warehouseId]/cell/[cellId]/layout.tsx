@@ -19,18 +19,14 @@ import {
 } from 'lucide-react';
 import CO2AreaChart from '@/features/overview/components/area-graph';
 
-export default function OverViewLayout({
-  sales,
-  pie_stats,
+export default async function OverViewLayout({
   bar_stats,
   params,
 }: {
-  sales: React.ReactNode;
-  pie_stats: React.ReactNode;
   bar_stats: React.ReactNode;
-  params: { cellId: string };
+  params: Promise<{ cellId: string }>;
 }) {
-  const { cellId } = params;
+  const { cellId } = await params;
 
   console.log('Cell ID:', cellId);
   return (

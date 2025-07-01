@@ -8,17 +8,18 @@ import {
   SelectContent,
   SelectItem
 } from '@/components/ui/select';
-import { getCellsByWarehouseId } from '@/actions/cells';
 
 type Cell = { id: string; name: string };
 
 export default async function CellSelect({
   warehouseId,
+  cells
 }: {
+
   warehouseId: string;
+    cells: Cell[];
 }) {
   const router = useRouter();
-  const cells = await getCellsByWarehouseId(warehouseId);
 
   const handleCellSelect = (cellId: string) => {
     router.push(`/dashboard/warehouse/${warehouseId}/cell/${cellId}`);
